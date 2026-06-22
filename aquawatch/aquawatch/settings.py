@@ -32,7 +32,24 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-c5fv=qk*nx-w%mk5dg)q@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False').lower() in ('1', 'true', 'yes')
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    'aquawatch.tech',
+    'www.aquawatch.tech',
+    'aquawatch-myjz.onrender.com',
+]
+
+# Accept additional comma-separated hosts configured in Render.
+ALLOWED_HOSTS.extend(
+    host.strip()
+    for host in os.environ.get('ALLOWED_HOSTS', '').split(',')
+    if host.strip()
+)
+
+# Render provides the service hostname automatically.
+if render_hostname := os.environ.get('RENDER_EXTERNAL_HOSTNAME'):
+    ALLOWED_HOSTS.append(render_hostname)
 
 
 # Application definition
