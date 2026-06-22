@@ -1,7 +1,17 @@
 {% extends 'aquawatch_app/base.html' %}
 {% block content %}
 <div class="page-card large">
-  <h1>Dashboard</h1>
+  <div class="dashboard-heading">
+    <div>
+      <span class="dashboard-kicker">Coastal operations</span>
+      <h1>Dashboard</h1>
+    </div>
+    <div class="dashboard-clock" aria-label="Current local date and time">
+      <span class="dashboard-clock-label">Local time</span>
+      <time id="dashboard-date"></time>
+      <strong id="dashboard-time"></strong>
+    </div>
+  </div>
   <div class="button-row"><a class="button button-secondary" href="{% url 'reports' %}">Submit incident report</a><a class="button button-secondary" href="{% url 'profile' %}">Officer profile</a></div>
   <p>{{ weather_status }}</p>
   <div class="dashboard-grid">
@@ -16,13 +26,13 @@
   </div>
 
   <section class="dashboard-card full-width">
-    <div class="page-header-row"><h2>Forecast</h2><a class="button button-secondary" href="{% url 'map' %}">View area</a></div>
-    {% if weather.forecast %}<div class="panel-grid forecast-grid">{% for day in weather.forecast %}<div class="panel-card forecast-card"><div class="forecast-card-top"><strong>{{ day.date }}</strong><img class="openweather-icon" src="https://openweathermap.org/img/wn/{{ day.icon }}@2x.png" alt="{{ day.description }}" width="72" height="72" loading="lazy"></div><p class="panel-meta">{{ day.description }}</p><p class="forecast-temperature">{{ day.temperature }}&deg;C</p></div>{% endfor %}</div>{% else %}<p>No forecast available right now.</p>{% endif %}
+    <div class="page-header-row"><h2>Recent alerts</h2><a class="button button-secondary" href="{% url 'alerts' %}">View all</a></div>
+    {% if alerts %}<div class="panel-grid">{% for alert in alerts %}<div class="panel-card"><strong>{{ alert.type }}</strong><div class="panel-meta">{{ alert.location }} &middot; {{ alert.time }}</div><div class="severity-pill severity-{{ alert.severity|lower }}">{{ alert.severity }}</div><p>{{ alert.description }}</p></div>{% endfor %}</div>{% else %}<p>No alerts yet.</p>{% endif %}
   </section>
 
   <section class="dashboard-card full-width">
-    <div class="page-header-row"><h2>Recent alerts</h2><a class="button button-secondary" href="{% url 'alerts' %}">View all</a></div>
-    {% if alerts %}<div class="panel-grid">{% for alert in alerts %}<div class="panel-card"><strong>{{ alert.type }}</strong><div class="panel-meta">{{ alert.location }} &middot; {{ alert.time }}</div><div class="severity-pill severity-{{ alert.severity|lower }}">{{ alert.severity }}</div><p>{{ alert.description }}</p></div>{% endfor %}</div>{% else %}<p>No alerts yet.</p>{% endif %}
+    <div class="page-header-row"><div><h2>Forecast</h2><p class="section-helper">Scroll sideways to see later dates</p></div><a class="button button-secondary" href="{% url 'map' %}">View area</a></div>
+    {% if weather.forecast %}<div class="forecast-scroll" aria-label="Weather forecast by date" tabindex="0">{% for day in weather.forecast %}<div class="panel-card forecast-card"><div class="forecast-card-top"><strong>{{ day.date }}</strong><img class="openweather-icon" src="https://openweathermap.org/img/wn/{{ day.icon }}@2x.png" alt="{{ day.description }}" width="72" height="72" loading="lazy"></div><p class="panel-meta">{{ day.description }}</p><p class="forecast-temperature">{{ day.temperature }}&deg;C</p></div>{% endfor %}</div>{% else %}<p>No forecast available right now.</p>{% endif %}
   </section>
 
   <section class="dashboard-card full-width">
@@ -30,4 +40,29 @@
     {% if devices %}<div class="panel-grid">{% for device in devices %}<div class="panel-card"><strong>{{ device.name }}</strong><div class="panel-meta">{{ device.serial }} &middot; {{ device.vessel }}</div><div>{{ device.owner }}</div><div class="panel-footer">Last: {{ device.last_location }} &middot; {{ device.last_updated }}</div></div>{% endfor %}</div>{% else %}<p>No devices connected yet.</p>{% endif %}
   </section>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  (() => {
+    const dateElement = document.getElementById('dashboard-date');
+    const timeElement = document.getElementById('dashboard-time');
+    const dateFormatter = new Intl.DateTimeFormat(undefined, {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+    const timeFormatter = new Intl.DateTimeFormat(undefined, {
+      hour: 'numeric', minute: '2-digit', second: '2-digit'
+    });
+
+    function updateDashboardClock() {
+      const now = new Date();
+      dateElement.dateTime = now.toISOString();
+      dateElement.textContent = dateFormatter.format(now);
+      timeElement.textContent = timeFormatter.format(now);
+    }
+
+    updateDashboardClock();
+    window.setInterval(updateDashboardClock, 1000);
+  })();
+</script>
 {% endblock %}

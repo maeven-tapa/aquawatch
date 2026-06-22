@@ -208,6 +208,41 @@ details summary { color: #83d5ff; cursor: pointer; font-weight: 700; }
   margin-top: 18px;
 }
 
+.dashboard-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 18px;
+}
+
+.dashboard-heading h1 { margin: 4px 0 0; }
+
+.dashboard-kicker,
+.dashboard-clock-label {
+  color: #55dff1;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.dashboard-clock {
+  display: grid;
+  min-width: 260px;
+  gap: 3px;
+  padding: 14px 18px;
+  border: 1px solid rgba(85, 223, 241, 0.18);
+  border-radius: 18px;
+  background: rgba(85, 223, 241, 0.07);
+  text-align: right;
+}
+
+.dashboard-clock time { color: rgba(229, 242, 255, 0.72); font-size: 0.9rem; }
+.dashboard-clock strong { color: #f2fbff; font-size: 1.35rem; letter-spacing: -0.025em; }
+body.theme-light .dashboard-clock time { color: rgba(16, 37, 59, 0.72); }
+body.theme-light .dashboard-clock strong { color: #10253b; }
+
 .dashboard-card {
   background: linear-gradient(180deg, rgba(8, 20, 44, 0.95), rgba(5, 13, 34, 0.95));
   border-radius: 24px;
@@ -298,6 +333,34 @@ details summary { color: #83d5ff; cursor: pointer; font-weight: 700; }
 .forecast-card-top strong { margin: 0; }
 .forecast-temperature { margin: 6px 0 0; color: #f0f8ff; font-size: 2rem; font-weight: 800; letter-spacing: -0.04em; }
 body.theme-light .forecast-temperature { color: #10253b; }
+
+.section-helper {
+  margin: 5px 0 0;
+  color: rgba(214, 233, 250, 0.62);
+  font-size: 0.86rem;
+}
+
+body.theme-light .section-helper { color: rgba(16, 37, 59, 0.65); }
+
+.forecast-scroll {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(210px, 240px);
+  gap: 16px;
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  padding: 2px 2px 16px;
+  scroll-snap-type: inline proximity;
+  scrollbar-color: #3cbde7 rgba(255, 255, 255, 0.08);
+  scrollbar-width: thin;
+}
+
+.forecast-scroll:focus-visible { outline: 2px solid #55dff1; outline-offset: 5px; }
+.forecast-scroll::-webkit-scrollbar { height: 10px; }
+.forecast-scroll::-webkit-scrollbar-track { border-radius: 999px; background: rgba(255, 255, 255, 0.07); }
+.forecast-scroll::-webkit-scrollbar-thumb { border-radius: 999px; background: linear-gradient(90deg, #55dff1, #31a9ff); }
+.forecast-card { min-height: 170px; scroll-snap-align: start; }
 
 .map-card {
   border-radius: 24px;
@@ -402,6 +465,10 @@ label {
   .dashboard-grid {
     grid-template-columns: 1fr;
   }
+
+  .dashboard-heading { align-items: stretch; flex-direction: column; }
+  .dashboard-clock { min-width: 0; text-align: left; }
+  .forecast-scroll { grid-auto-columns: minmax(190px, 78vw); }
 
   .page-container { padding: 22px 14px 42px; }
   .page-card { padding: 20px; border-radius: 18px; }
