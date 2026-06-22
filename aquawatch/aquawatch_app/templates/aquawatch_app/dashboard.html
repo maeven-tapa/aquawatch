@@ -1,0 +1,33 @@
+{% extends 'aquawatch_app/base.html' %}
+{% block content %}
+<div class="page-card large">
+  <h1>Dashboard</h1>
+  <div class="button-row"><a class="button button-secondary" href="{% url 'reports' %}">Submit incident report</a><a class="button button-secondary" href="{% url 'profile' %}">Officer profile</a></div>
+  <p>{{ weather_status }}</p>
+  <div class="dashboard-grid">
+    <section class="dashboard-card">
+      <h2>Live weather</h2>
+      <div class="weather-summary">
+        <div class="current-weather-main"><img class="openweather-icon openweather-icon-current" src="https://openweathermap.org/img/wn/{{ weather.current.icon }}@2x.png" alt="{{ weather.current.description }}" width="100" height="100"><div><p class="weather-temp">{{ weather.current.temperature }}&deg;C</p><p>{{ weather.current.description }}</p></div></div>
+        <div><span class="weather-pill">Wind {{ weather.wind_speed }} km/h</span><span class="weather-pill">Humidity {{ weather.humidity }}%</span><span class="weather-pill">Visibility {{ weather.visibility }} m</span></div>
+      </div>
+    </section>
+    <section class="dashboard-card"><h2>Monitoring area</h2><p>{{ area.label }}</p><p>Lat: {{ area.latitude }}, Lon: {{ area.longitude }}</p><a class="button button-secondary" href="{% url 'location' %}">Change location</a></section>
+  </div>
+
+  <section class="dashboard-card full-width">
+    <div class="page-header-row"><h2>Forecast</h2><a class="button button-secondary" href="{% url 'map' %}">View area</a></div>
+    {% if weather.forecast %}<div class="panel-grid forecast-grid">{% for day in weather.forecast %}<div class="panel-card forecast-card"><div class="forecast-card-top"><strong>{{ day.date }}</strong><img class="openweather-icon" src="https://openweathermap.org/img/wn/{{ day.icon }}@2x.png" alt="{{ day.description }}" width="72" height="72" loading="lazy"></div><p class="panel-meta">{{ day.description }}</p><p class="forecast-temperature">{{ day.temperature }}&deg;C</p></div>{% endfor %}</div>{% else %}<p>No forecast available right now.</p>{% endif %}
+  </section>
+
+  <section class="dashboard-card full-width">
+    <div class="page-header-row"><h2>Recent alerts</h2><a class="button button-secondary" href="{% url 'alerts' %}">View all</a></div>
+    {% if alerts %}<div class="panel-grid">{% for alert in alerts %}<div class="panel-card"><strong>{{ alert.type }}</strong><div class="panel-meta">{{ alert.location }} &middot; {{ alert.time }}</div><div class="severity-pill severity-{{ alert.severity|lower }}">{{ alert.severity }}</div><p>{{ alert.description }}</p></div>{% endfor %}</div>{% else %}<p>No alerts yet.</p>{% endif %}
+  </section>
+
+  <section class="dashboard-card full-width">
+    <div class="page-header-row"><h2>Devices</h2><a class="button button-secondary" href="{% url 'add_device' %}">Add device</a></div>
+    {% if devices %}<div class="panel-grid">{% for device in devices %}<div class="panel-card"><strong>{{ device.name }}</strong><div class="panel-meta">{{ device.serial }} &middot; {{ device.vessel }}</div><div>{{ device.owner }}</div><div class="panel-footer">Last: {{ device.last_location }} &middot; {{ device.last_updated }}</div></div>{% endfor %}</div>{% else %}<p>No devices connected yet.</p>{% endif %}
+  </section>
+</div>
+{% endblock %}

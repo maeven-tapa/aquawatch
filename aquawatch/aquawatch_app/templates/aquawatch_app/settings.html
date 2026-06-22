@@ -1,0 +1,8 @@
+{% extends 'aquawatch_app/base.html' %}
+{% block content %}<div class="page-card"><h1>Settings</h1><p class="muted">Manage your AquaWatch workspace.</p>
+{% if messages %}<ul class="flash-messages">{% for message in messages %}<li>{{ message }}</li>{% endfor %}</ul>{% endif %}
+<section class="settings-section"><h2>Account</h2><a class="settings-link" href="{% url 'profile' %}"><span><strong>{{ user.get_full_name|default:user.username }}</strong><small>Edit name, role, contact, station, photo, and password</small></span><span>&rsaquo;</span></a></section>
+<form method="post" class="settings-form">{% csrf_token %}{{ form.as_p }}<button class="button" type="submit">Save settings</button></form>
+<section class="settings-section"><h2>Location</h2><a class="settings-link" href="{% url 'location' %}"><span><strong>Monitoring Location</strong><small>Change the coastal area used by AquaWatch</small></span><span>&rsaquo;</span></a></section>
+<section class="settings-section info-grid"><div><h2>App Version</h2><p>AquaWatch v1.0.0</p></div><div><h2>Help &amp; Support</h2><p>For urgent incidents, contact your local response center. Support: support@aquawatch.local</p></div></section>
+<section class="danger-zone"><h2>Danger Zone</h2><a class="button button-danger" href="{% url 'logout' %}">Logout</a></section></div>{% endblock %}

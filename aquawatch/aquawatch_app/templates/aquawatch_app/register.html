@@ -1,0 +1,74 @@
+{% extends 'aquawatch_app/base.html' %}
+
+{% block content %}
+<div class="signup-layout">
+    <aside class="signup-intro">
+        <span class="section-kicker">Join AquaWatch</span>
+        <h1>Build your coastal watch workspace.</h1>
+        <p>Set up your responder identity, secure your account, and choose the coastline your team monitors.</p>
+        <div class="signup-benefits">
+            <div><span>01</span><p><strong>Your response profile</strong>Keep your role, station, and contact details together.</p></div>
+            <div><span>02</span><p><strong>One operational view</strong>Access weather, maps, trackers, alerts, and reports.</p></div>
+            <div><span>03</span><p><strong>Ready for the field</strong>Continue directly to monitoring-area setup.</p></div>
+        </div>
+    </aside>
+
+    <section class="signup-card">
+        <div class="signup-progress" aria-label="Registration progress">
+            <div class="signup-progress-item active" data-progress="1"><span>1</span><div><strong>About you</strong><small>Personal and work details</small></div></div>
+            <div class="signup-progress-line"><i id="progress-fill"></i></div>
+            <div class="signup-progress-item" data-progress="2"><span>2</span><div><strong>Account</strong><small>Credentials and terms</small></div></div>
+        </div>
+
+        <form method="post" id="signup-form" novalidate>
+            {% csrf_token %}
+            {% if form.non_field_errors %}<div class="form-errors">{{ form.non_field_errors }}</div>{% endif %}
+
+            <fieldset class="signup-step" data-step="1" {% if form.username.errors or form.email.errors or form.password1.errors or form.password2.errors or form.accepted_terms.errors %}hidden{% endif %}>
+                <div class="step-heading"><span>Step 1 of 2</span><h2>Tell us about yourself</h2><p>This information identifies you within your response team.</p></div>
+                <div class="form-grid two-column">
+                    <div class="field-group"><label for="{{ form.first_name.id_for_label }}">First name</label>{{ form.first_name }}{{ form.first_name.errors }}</div>
+                    <div class="field-group"><label for="{{ form.last_name.id_for_label }}">Last name</label>{{ form.last_name }}{{ form.last_name.errors }}</div>
+                </div>
+                <div class="field-group"><label for="{{ form.phone.id_for_label }}">Phone number</label>{{ form.phone }}{{ form.phone.errors }}</div>
+                <div class="field-group"><label for="{{ form.role.id_for_label }}">Role / position</label>{{ form.role }}{{ form.role.errors }}</div>
+                <div class="field-group"><label for="{{ form.station.id_for_label }}">Station / office</label>{{ form.station }}{{ form.station.errors }}</div>
+                <div class="signup-actions"><span></span><button class="button" id="signup-next" type="button">Continue <span>&rarr;</span></button></div>
+            </fieldset>
+
+            <fieldset class="signup-step" data-step="2" {% if not form.username.errors and not form.email.errors and not form.password1.errors and not form.password2.errors and not form.accepted_terms.errors %}hidden{% endif %}>
+                <div class="step-heading"><span>Step 2 of 2</span><h2>Secure your account</h2><p>Choose your login details and review the AquaWatch terms.</p></div>
+                <div class="field-group"><label for="{{ form.username.id_for_label }}">Username</label>{{ form.username }}{{ form.username.errors }}{% if form.username.help_text %}<small>{{ form.username.help_text|safe }}</small>{% endif %}</div>
+                <div class="field-group"><label for="{{ form.email.id_for_label }}">Email address</label>{{ form.email }}{{ form.email.errors }}</div>
+                <div class="field-group"><label for="{{ form.password1.id_for_label }}">Password</label>{{ form.password1 }}{{ form.password1.errors }}{% if form.password1.help_text %}<small>{{ form.password1.help_text|safe }}</small>{% endif %}</div>
+                <div class="field-group"><label for="{{ form.password2.id_for_label }}">Confirm password</label>{{ form.password2 }}{{ form.password2.errors }}</div>
+                <div class="terms-check">{{ form.accepted_terms }}<label for="{{ form.accepted_terms.id_for_label }}">I agree to the <a href="{% url 'terms' %}" target="_blank">Terms and Conditions</a>.</label></div>{{ form.accepted_terms.errors }}
+                <div class="signup-actions"><button class="button button-secondary" id="signup-back" type="button">&larr; Back</button><button class="button" type="submit">Create account</button></div>
+            </fieldset>
+        </form>
+        <p class="signup-login">Already have an account? <a href="{% url 'login' %}">Sign in</a></p>
+    </section>
+</div>
+
+<script>
+(() => {
+    const steps = [...document.querySelectorAll('.signup-step')];
+    const progress = [...document.querySelectorAll('.signup-progress-item')];
+    const fill = document.getElementById('progress-fill');
+    function showStep(number) {
+        steps.forEach(step => step.hidden = Number(step.dataset.step) !== number);
+        progress.forEach(item => item.classList.toggle('active', Number(item.dataset.progress) <= number));
+        fill.style.width = number === 2 ? '100%' : '0%';
+        document.querySelector(`[data-step="${number}"]`).querySelector('input')?.focus();
+    }
+    document.getElementById('signup-next').addEventListener('click', () => {
+        const visibleInputs = [...steps[0].querySelectorAll('input')];
+        const invalid = visibleInputs.find(input => !input.checkValidity());
+        if (invalid) { invalid.reportValidity(); return; }
+        showStep(2);
+    });
+    document.getElementById('signup-back').addEventListener('click', () => showStep(1));
+    showStep(steps[1].hidden ? 1 : 2);
+})();
+</script>
+{% endblock %}

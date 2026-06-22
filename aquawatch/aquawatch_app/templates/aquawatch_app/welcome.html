@@ -1,0 +1,50 @@
+{% extends 'aquawatch_app/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="landing-page">
+    <section class="landing-hero">
+        <div class="hero-copy">
+            <div class="eyebrow"><span></span> Coastal intelligence, always watching</div>
+            <h1>See the coast.<br><em>Respond sooner.</em></h1>
+            <p>AquaWatch brings live weather, monitoring areas, field devices, safety alerts, and incident reports into one clear operational view.</p>
+            <div class="hero-actions">
+                <a class="button hero-primary" href="{% url 'register' %}">Create your workspace <span>&rarr;</span></a>
+                <a class="button button-secondary hero-secondary" href="{% url 'login' %}">Sign in</a>
+            </div>
+            <div class="hero-trust">
+                <span><strong>20 km</strong> monitoring radius</span>
+                <span><strong>Live</strong> weather context</span>
+                <span><strong>One</strong> response workspace</span>
+            </div>
+        </div>
+        <div class="hero-visual" aria-label="AquaWatch eye and wave logo">
+            <div class="hero-orbit orbit-one"></div><div class="hero-orbit orbit-two"></div>
+            <img src="{% static 'aquawatch_app/aquawatch-logo.png' %}" alt="AquaWatch eye and wave logo">
+            <div class="hero-float-card hero-float-top"><span class="live-dot"></span><div><small>System status</small><strong>Monitoring active</strong></div></div>
+            <div class="hero-float-card hero-float-bottom"><span class="wave-icon">≈</span><div><small>Coastal overview</small><strong>Map · Weather · Alerts</strong></div></div>
+        </div>
+    </section>
+
+    <section class="landing-section">
+        <div class="section-intro"><span class="section-kicker">A complete watch station</span><h2>Everything your response team needs,<br>without losing sight of the water.</h2></div>
+        <div class="feature-grid">
+            <article class="feature-card feature-map"><div class="feature-icon">⌖</div><h3>Live monitoring map</h3><p>See your coastal watch area, its 20 km coverage radius, registered devices, and your current position.</p><a href="{% url 'login' %}">Explore the map <span>&rarr;</span></a></article>
+            <article class="feature-card"><div class="feature-icon">☁</div><h3>Weather awareness</h3><p>Keep current marine conditions, wind, visibility, humidity, and forecast information close to every decision.</p></article>
+            <article class="feature-card"><div class="feature-icon">!</div><h3>Alerts and reports</h3><p>Review safety alerts, recommended response actions, and preserve incident reports for the whole team.</p></article>
+            <article class="feature-card"><div class="feature-icon">⌁</div><h3>Field device tracking</h3><p>Register vessel trackers, operators, hardware IDs, emergency contacts, and the latest known location.</p></article>
+        </div>
+    </section>
+
+    <section class="mission-panel">
+        <div><span class="section-kicker">Built for coastal readiness</span><h2>From signal to coordinated action.</h2><p>Set your monitoring area, connect your equipment, understand current conditions, and give responders one reliable place to work.</p></div>
+        <ol class="mission-steps"><li><span>01</span><div><strong>Define your watch area</strong><p>Pin the coastline your team protects.</p></div></li><li><span>02</span><div><strong>Connect field devices</strong><p>Keep tracker and vessel records together.</p></div></li><li><span>03</span><div><strong>Monitor and respond</strong><p>Turn context into a faster response.</p></div></li></ol>
+    </section>
+
+    <section class="landing-cta">
+        <img src="{% static 'aquawatch_app/aquawatch-logo.png' %}" alt="">
+        <div><span class="section-kicker">Ready to watch the water?</span><h2>Bring your coastal operations into focus.</h2></div>
+        <a class="button hero-primary" href="{% url 'register' %}">Get started <span>&rarr;</span></a>
+    </section>
+</div>
+{% endblock %}

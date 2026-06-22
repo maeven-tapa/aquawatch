@@ -1,0 +1,58 @@
+{% extends 'aquawatch_app/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="login-layout">
+    <section class="login-visual">
+        <div class="login-visual-copy">
+            <span class="section-kicker">AquaWatch command center</span>
+            <h1>Welcome back<br>to the watch.</h1>
+            <p>Return to your live coastal map, field devices, weather conditions, alerts, and incident reports.</p>
+        </div>
+        <div class="login-logo-stage">
+            <div class="login-ring ring-one"></div><div class="login-ring ring-two"></div>
+            <img src="{% static 'aquawatch_app/aquawatch-logo.png' %}" alt="AquaWatch eye and wave logo">
+        </div>
+        <div class="login-status"><span class="live-dot"></span><div><small>Coastal monitoring</small><strong>Workspace ready</strong></div></div>
+    </section>
+
+    <section class="login-card">
+        <div class="login-heading">
+            <span class="login-mark"><img src="{% static 'aquawatch_app/aquawatch-logo.png' %}" alt=""></span>
+            <div><span class="section-kicker">Secure access</span><h2>Sign in to AquaWatch</h2><p>Enter your account details to continue.</p></div>
+        </div>
+
+        {% if form.non_field_errors %}<div class="login-error" role="alert"><strong>We couldn't sign you in.</strong>{{ form.non_field_errors }}</div>{% endif %}
+        <form method="post" class="login-form">
+            {% csrf_token %}
+            <div class="field-group login-field">
+                <label for="{{ form.username.id_for_label }}">Username</label>
+                <div class="input-with-icon"><span aria-hidden="true">◎</span>{{ form.username }}</div>
+                {{ form.username.errors }}
+            </div>
+            <div class="field-group login-field">
+                <div class="field-label-row"><label for="{{ form.password.id_for_label }}">Password</label><a href="{% url 'forgot_password' %}">Forgot password?</a></div>
+                <div class="input-with-icon"><span aria-hidden="true">◇</span>{{ form.password }}<button id="toggle-password" type="button" aria-label="Show password">Show</button></div>
+                {{ form.password.errors }}
+            </div>
+            <button class="button login-submit" type="submit">Sign in <span>&rarr;</span></button>
+        </form>
+        <div class="login-divider"><span>New to AquaWatch?</span></div>
+        <a class="button button-secondary login-create" href="{% url 'register' %}">Create an account</a>
+        <p class="login-help">Need help? Contact <a href="mailto:support@aquawatch.local">support@aquawatch.local</a></p>
+    </section>
+</div>
+
+<script>
+(() => {
+    const password = document.getElementById('{{ form.password.id_for_label }}');
+    const toggle = document.getElementById('toggle-password');
+    toggle.addEventListener('click', () => {
+        const reveal = password.type === 'password';
+        password.type = reveal ? 'text' : 'password';
+        toggle.textContent = reveal ? 'Hide' : 'Show';
+        toggle.setAttribute('aria-label', reveal ? 'Hide password' : 'Show password');
+    });
+})();
+</script>
+{% endblock %}

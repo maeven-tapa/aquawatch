@@ -1,0 +1,13 @@
+{% extends 'aquawatch_app/base.html' %}
+
+{% block content %}
+<div class="page-card">
+    <h1>Add device</h1>
+    <p class="muted">Register a tracker for coastal monitoring.</p>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="button" type="submit">Save device</button>
+    </form>
+</div>
+{% endblock %}
