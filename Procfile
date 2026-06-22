@@ -1,1 +1,1 @@
-web: gunicorn aquawatch.wsgi --log-file -
+web: gunicorn --chdir aquawatch aquawatch.wsgi:application --log-file -
