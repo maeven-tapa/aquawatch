@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: aquawatch
+    env: python
+    branch: main
+    root: aquawatch
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn aquawatch.wsgi --log-file -
+    plan: starter
