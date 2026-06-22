@@ -218,6 +218,20 @@ details summary { color: #83d5ff; cursor: pointer; font-weight: 700; }
 
 .dashboard-heading h1 { margin: 4px 0 0; }
 
+.dashboard-heading-side {
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.dashboard-report-button {
+  min-width: max-content;
+  gap: 18px;
+  background: linear-gradient(135deg, #55e6ef, #31a9ff);
+  box-shadow: 0 12px 28px rgba(36, 172, 255, 0.2);
+}
+
 .dashboard-kicker,
 .dashboard-clock-label {
   color: #55dff1;
@@ -252,9 +266,10 @@ body.theme-light .dashboard-clock strong { color: #10253b; }
   border: 1px solid rgba(190, 229, 255, 0.18);
   border-radius: 32px;
   background:
-    linear-gradient(180deg, rgba(165, 190, 208, 0.72), rgba(31, 69, 91, 0.84)),
-    radial-gradient(circle at 15% 12%, #d8e3ea 0, #89a8bb 35%, #163a52 100%);
-  box-shadow: 0 28px 70px rgba(0, 6, 18, 0.34);
+    radial-gradient(circle at 86% 8%, rgba(31, 192, 225, 0.22), transparent 28%),
+    radial-gradient(circle at 8% 92%, rgba(25, 112, 180, 0.3), transparent 34%),
+    linear-gradient(145deg, #06152d 0%, #072a46 48%, #04182d 100%);
+  box-shadow: 0 28px 70px rgba(0, 6, 18, 0.42), inset 0 1px rgba(117, 224, 255, 0.08);
 }
 
 .conditions-card::before {
@@ -262,11 +277,12 @@ body.theme-light .dashboard-clock strong { color: #10253b; }
   position: absolute;
   z-index: -1;
   inset: 0;
-  opacity: 0.38;
+  opacity: 0.7;
   background:
-    radial-gradient(ellipse at 30% 82%, rgba(4, 43, 63, 0.78) 0 18%, transparent 19%),
-    linear-gradient(174deg, transparent 0 56%, rgba(180, 216, 227, 0.18) 57% 59%, transparent 60%),
-    repeating-linear-gradient(178deg, transparent 0 56px, rgba(235, 249, 255, 0.06) 57px 59px);
+    radial-gradient(ellipse at 14% 88%, rgba(19, 169, 204, 0.2) 0 12%, transparent 13%),
+    radial-gradient(ellipse at 54% 104%, rgba(45, 130, 206, 0.17) 0 23%, transparent 24%),
+    repeating-radial-gradient(circle at 82% 20%, transparent 0 28px, rgba(83, 218, 244, 0.055) 29px 30px),
+    linear-gradient(166deg, transparent 0 48%, rgba(85, 224, 241, 0.07) 49% 50%, transparent 51%);
 }
 
 .conditions-header {
@@ -557,6 +573,8 @@ label {
   }
 
   .dashboard-heading { align-items: stretch; flex-direction: column; }
+  .dashboard-heading-side { align-items: stretch; flex-direction: column-reverse; }
+  .dashboard-report-button { justify-content: space-between; }
   .dashboard-clock { min-width: 0; text-align: left; }
   .forecast-scroll { grid-auto-columns: minmax(190px, 78vw); }
   .conditions-card { padding: 24px 18px; border-radius: 24px; }
