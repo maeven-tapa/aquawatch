@@ -44,6 +44,7 @@ def fetch_weather(latitude: float, longitude: float) -> dict:
             'location': 'Quiapo District Coast Watch',
             'current': {'temperature': 27, 'description': 'Partly cloudy', 'icon': '02d'},
             'wind_speed': 12,
+            'wind_gust': 16,
             'humidity': 78,
             'visibility': 8000,
             'forecast': [],
@@ -66,8 +67,10 @@ def fetch_weather(latitude: float, longitude: float) -> dict:
             'location': 'Quiapo District Coast Watch',
             'current': {'temperature': 27, 'description': 'Partly cloudy', 'icon': '02d'},
             'wind_speed': 12,
+            'wind_gust': 16,
             'humidity': 78,
             'visibility': 8000,
+            'forecast': [],
         }
 
     main = payload.get('main', {})
@@ -117,6 +120,7 @@ def fetch_weather(latitude: float, longitude: float) -> dict:
             'icon': weather.get('icon', '02d'),
         },
         'wind_speed': float(wind.get('speed', 0)),
+        'wind_gust': float(wind.get('gust', wind.get('speed', 0))),
         'humidity': int(main.get('humidity', 0)),
         'visibility': int(payload.get('visibility', 0)),
         'forecast': forecast,
@@ -214,6 +218,23 @@ def dashboard(request):
 
     alerts = Alert.objects.filter(user=user).order_by('-id')[:5]
     devices = Device.objects.filter(user=user).order_by('-id')[:5]
+    alert_count = Alert.objects.filter(user=user).count()
+    device_count = Device.objects.filter(user=user).count()
+
+    wind_speed = float(weather.get('wind_speed', 0))
+    visibility = int(weather.get('visibility', 0))
+    if wind_speed <= 10 and visibility >= 5000:
+        condition_status = 'Safe to sail'
+        condition_detail = 'Wind and visibility are within normal coastal operating ranges.'
+        condition_level = 'safe'
+    elif wind_speed <= 15 and visibility >= 3000:
+        condition_status = 'Use caution'
+        condition_detail = 'Conditions are changing. Monitor wind and visibility before departure.'
+        condition_level = 'caution'
+    else:
+        condition_status = 'Unsafe conditions'
+        condition_detail = 'Strong wind or low visibility may make coastal travel hazardous.'
+        condition_level = 'danger'
 
     return render(
         request,
@@ -225,6 +246,12 @@ def dashboard(request):
             'weather_status': weather_status,
             'alerts': alerts,
             'devices': devices,
+            'alert_count': alert_count,
+            'device_count': device_count,
+            'visibility_km': visibility / 1000,
+            'condition_status': condition_status,
+            'condition_detail': condition_detail,
+            'condition_level': condition_level,
         },
     )
 

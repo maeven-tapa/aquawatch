@@ -13,17 +13,32 @@
     </div>
   </div>
   <div class="button-row"><a class="button button-secondary" href="{% url 'reports' %}">Submit incident report</a><a class="button button-secondary" href="{% url 'profile' %}">Officer profile</a></div>
-  <p>{{ weather_status }}</p>
-  <div class="dashboard-grid">
-    <section class="dashboard-card">
-      <h2>Live weather</h2>
-      <div class="weather-summary">
-        <div class="current-weather-main"><img class="openweather-icon openweather-icon-current" src="https://openweathermap.org/img/wn/{{ weather.current.icon }}@2x.png" alt="{{ weather.current.description }}" width="100" height="100"><div><p class="weather-temp">{{ weather.current.temperature }}&deg;C</p><p>{{ weather.current.description }}</p></div></div>
-        <div><span class="weather-pill">Wind {{ weather.wind_speed }} km/h</span><span class="weather-pill">Humidity {{ weather.humidity }}%</span><span class="weather-pill">Visibility {{ weather.visibility }} m</span></div>
+  <section class="conditions-card full-width">
+    <div class="conditions-header">
+      <div class="conditions-heading-copy">
+        <span class="conditions-kicker">Live conditions</span>
+        <div class="conditions-title-row"><h2>{{ area.label }}</h2><a href="{% url 'location' %}">Change station</a></div>
+        <p>{{ weather.current.description }} <span aria-hidden="true">|</span> OpenWeather: {{ weather.location }}</p>
       </div>
-    </section>
-    <section class="dashboard-card"><h2>Monitoring area</h2><p>{{ area.label }}</p><p>Lat: {{ area.latitude }}, Lon: {{ area.longitude }}</p><a class="button button-secondary" href="{% url 'location' %}">Change location</a></section>
-  </div>
+      <div class="conditions-weather-icon">
+        <img src="https://openweathermap.org/img/wn/{{ weather.current.icon }}@2x.png" alt="{{ weather.current.description }}" width="100" height="100">
+      </div>
+    </div>
+
+    <div class="conditions-status conditions-status-{{ condition_level }}">
+      <span class="condition-symbol" aria-hidden="true">&#9673;</span>
+      <div><strong>{{ condition_status }}</strong><p>{{ condition_detail }}</p></div>
+    </div>
+
+    <div class="conditions-metrics">
+      <article class="condition-metric metric-wind"><div class="metric-label"><span aria-hidden="true">&#8779;</span><strong>Wind</strong></div><p>{{ weather.wind_speed|floatformat:1 }} m/s</p><small>Sustained speed</small></article>
+      <article class="condition-metric metric-temp"><div class="metric-label"><span aria-hidden="true">&#8451;</span><strong>Air Temp</strong></div><p>{{ weather.current.temperature }}&deg;</p><small>Current temperature</small></article>
+      <article class="condition-metric metric-gust"><div class="metric-label"><span aria-hidden="true">&#8599;</span><strong>Wind Gust</strong></div><p>{{ weather.wind_gust|floatformat:1 }} m/s</p><small>Peak speed</small></article>
+      <article class="condition-metric metric-visibility"><div class="metric-label"><span aria-hidden="true">&#9673;</span><strong>Visibility</strong></div><p>{{ visibility_km|floatformat:1 }} km</p><small>Viewing range</small></article>
+      <article class="condition-metric metric-alerts"><div class="metric-label"><span aria-hidden="true">!</span><strong>Alerts</strong></div><p>{{ alert_count }}</p><small>Active incidents</small></article>
+      <article class="condition-metric metric-devices"><div class="metric-label"><span aria-hidden="true">&#8981;</span><strong>Devices</strong></div><p>{{ device_count }}</p><small>Online sensors</small></article>
+    </div>
+  </section>
 
   <section class="dashboard-card full-width">
     <div class="page-header-row"><h2>Recent alerts</h2><a class="button button-secondary" href="{% url 'alerts' %}">View all</a></div>

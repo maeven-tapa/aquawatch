@@ -15,6 +15,14 @@ class FeatureParityTests(TestCase):
         for name in ('dashboard', 'map', 'alerts', 'devices', 'reports', 'profile', 'settings'):
             self.assertEqual(self.client.get(reverse(name)).status_code, 200)
 
+    def test_dashboard_uses_unified_live_conditions_panel(self):
+        response = self.client.get(reverse('dashboard'))
+
+        self.assertContains(response, 'Live conditions')
+        self.assertContains(response, 'class="conditions-card full-width"')
+        self.assertContains(response, 'class="condition-metric', count=6)
+        self.assertNotContains(response, '<h2>Live weather</h2>')
+
     def test_incident_report_is_persisted(self):
         response = self.client.post(reverse('reports'), {
             'type': 'Distress signal', 'location': 'Manila Bay',
