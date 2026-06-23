@@ -20,6 +20,7 @@ body {
 .mobile-map-canvas { width: 100%; height: 100%; }
 .map-top-controls { position: absolute; z-index: 3; left: 16px; top: 16px; display: flex; align-items: center; gap: 10px; max-width: calc(100% - 32px); }
 .map-location-button { min-height: 48px; border-radius: 12px; box-shadow: 0 8px 26px rgba(0,0,0,.26); white-space: nowrap; }
+.map-report-button { min-height: 48px; border-radius: 12px; color: #fff; background: linear-gradient(135deg, #ff776d, #e84c68); box-shadow: 0 8px 26px rgba(143,26,53,.3); white-space: nowrap; }
 .map-location-status { padding: 9px 12px; border-radius: 12px; color: #e9f5ff; background: rgba(7,27,51,.9); box-shadow: 0 8px 26px rgba(0,0,0,.2); font-size: .78rem; backdrop-filter: blur(8px); }
 .mobile-map-details { position: absolute; z-index: 4; left: 16px; right: 16px; bottom: 16px; padding: 18px; border-radius: 16px; color: #e6f0ff; background: rgba(8,19,43,.96); border: 1px solid rgba(255,255,255,.1); box-shadow: 0 16px 46px rgba(0,0,0,.38); backdrop-filter: blur(14px); }
 .mobile-map-details[hidden] { display: none; }
@@ -217,20 +218,6 @@ details summary { color: #83d5ff; cursor: pointer; font-weight: 700; }
 }
 
 .dashboard-heading h1 { margin: 4px 0 0; }
-
-.dashboard-heading-side {
-  display: flex;
-  align-items: stretch;
-  justify-content: flex-end;
-  gap: 12px;
-}
-
-.dashboard-report-button {
-  min-width: max-content;
-  gap: 18px;
-  background: linear-gradient(135deg, #55e6ef, #31a9ff);
-  box-shadow: 0 12px 28px rgba(36, 172, 255, 0.2);
-}
 
 .dashboard-kicker,
 .dashboard-clock-label {
@@ -573,8 +560,6 @@ label {
   }
 
   .dashboard-heading { align-items: stretch; flex-direction: column; }
-  .dashboard-heading-side { align-items: stretch; flex-direction: column-reverse; }
-  .dashboard-report-button { justify-content: space-between; }
   .dashboard-clock { min-width: 0; text-align: left; }
   .forecast-scroll { grid-auto-columns: minmax(190px, 78vw); }
   .conditions-card { padding: 24px 18px; border-radius: 24px; }

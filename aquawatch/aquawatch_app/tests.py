@@ -23,6 +23,14 @@ class FeatureParityTests(TestCase):
         self.assertContains(response, 'class="condition-metric', count=6)
         self.assertNotContains(response, '<h2>Live weather</h2>')
 
+    def test_incident_report_action_is_on_map_not_dashboard(self):
+        dashboard_response = self.client.get(reverse('dashboard'))
+        map_response = self.client.get(reverse('map'))
+
+        self.assertNotContains(dashboard_response, 'Submit incident report')
+        self.assertNotContains(dashboard_response, 'Officer profile')
+        self.assertContains(map_response, 'Submit incident report')
+
     def test_incident_report_is_persisted(self):
         response = self.client.post(reverse('reports'), {
             'type': 'Distress signal', 'location': 'Manila Bay',

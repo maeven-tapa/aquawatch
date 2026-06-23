@@ -6,16 +6,12 @@
       <span class="dashboard-kicker">Coastal operations</span>
       <h1>Dashboard</h1>
     </div>
-    <div class="dashboard-heading-side">
-      <a class="button dashboard-report-button" href="{% url 'reports' %}">Submit incident report <span aria-hidden="true">&rarr;</span></a>
-      <div class="dashboard-clock" aria-label="Current local date and time">
-        <span class="dashboard-clock-label">Local time</span>
-        <time id="dashboard-date"></time>
-        <strong id="dashboard-time"></strong>
-      </div>
+    <div class="dashboard-clock" aria-label="Current local date and time">
+      <span class="dashboard-clock-label">Local time</span>
+      <time id="dashboard-date"></time>
+      <strong id="dashboard-time"></strong>
     </div>
   </div>
-  <div class="button-row"><a class="button button-secondary" href="{% url 'profile' %}">Officer profile</a></div>
   <section class="conditions-card full-width">
     <div class="conditions-header">
       <div class="conditions-heading-copy">

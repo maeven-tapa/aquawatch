@@ -3,6 +3,7 @@
 <section class="mobile-map-shell" aria-label="AquaWatch monitoring map">
   <div id="map" class="mobile-map-canvas"></div>
   <div class="map-top-controls">
+    <a class="button map-report-button" href="{% url 'reports' %}">Submit incident report</a>
     {% if profile.share_location %}<button class="button map-location-button" id="show-my-location" type="button">Show My Location</button>{% else %}<a class="button button-secondary map-location-button" href="{% url 'settings' %}">Enable Location</a>{% endif %}
     <span class="map-location-status" id="location-status">Tap Show My Location to center the map</span>
   </div>
