@@ -55,7 +55,8 @@ body.theme-light .brand a, body.theme-light .site-nav a, body.theme-light label 
 body.theme-light .page-card, body.theme-light .dashboard-card, body.theme-light .panel-card { background: rgba(255, 255, 255, 0.94); border-color: rgba(7, 27, 51, 0.12); }
 body.theme-light input, body.theme-light textarea, body.theme-light select { background: #f3f8fc; color: #10253b; border-color: rgba(7, 27, 51, 0.16); }
 body.theme-light .button-secondary { background: #e1eef7; color: #12324d; }
-body.theme-light .muted, body.theme-light .panel-meta, body.theme-light .panel-footer { color: rgba(16, 37, 59, 0.68); }
+body.theme-light .muted, body.theme-light .panel-meta, body.theme-light .panel-footer, body.theme-light .detail-list dt { color: rgba(16, 37, 59, 0.68); }
+body.theme-light .capability-chip { background: rgba(21, 124, 161, 0.12); border-color: rgba(21, 124, 161, 0.22); color: #146179; }
 
 .site-header {
   display: flex;
@@ -117,6 +118,9 @@ body.theme-light .muted, body.theme-light .panel-meta, body.theme-light .panel-f
 .detail-list { display: grid; grid-template-columns: minmax(130px, 0.7fr) 1.3fr; gap: 11px 18px; }
 .detail-list dt { color: rgba(255,255,255,.62); }
 .detail-list dd { margin: 0; font-weight: 600; }
+.capability-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+.detail-capabilities { margin: 0; }
+.capability-chip { display: inline-flex; align-items: center; min-height: 28px; padding: 5px 10px; border: 1px solid rgba(85, 196, 255, 0.22); border-radius: 999px; color: #96e8ff; background: rgba(85, 196, 255, 0.11); font-size: 0.78rem; font-weight: 800; line-height: 1.1; }
 .tracking-placeholder { min-height: 240px; display: grid; place-items: center; align-content: center; text-align: center; border-radius: 18px; background: linear-gradient(150deg, #0e3856, #071b33); margin-bottom: 18px; padding: 24px; }
 .tracking-dot { width: 20px; height: 20px; border-radius: 50%; background: #55c4ff; box-shadow: 0 0 0 10px rgba(85,196,255,.16); margin-bottom: 20px; }
 .settings-section { margin: 28px 0; }

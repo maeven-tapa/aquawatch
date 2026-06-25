@@ -47,6 +47,10 @@ class DeviceForm(forms.ModelForm):
         fields = [
             'name',
             'device_type',
+            'water_level',
+            'gyro',
+            'gsm',
+            'gps',
             'serial',
             'imei',
             'sim',
@@ -62,7 +66,11 @@ class DeviceForm(forms.ModelForm):
         ]
         widgets = {
             'name': forms.TextInput(attrs={'placeholder': 'Tracker name'}),
-            'device_type': forms.TextInput(attrs={'placeholder': 'GPS tracker'}),
+            'device_type': forms.TextInput(attrs={'placeholder': 'Water level / gyro / GSM / GPS tracker'}),
+            'water_level': forms.CheckboxInput(),
+            'gyro': forms.CheckboxInput(),
+            'gsm': forms.CheckboxInput(),
+            'gps': forms.CheckboxInput(),
             'serial': forms.TextInput(attrs={'placeholder': 'Serial number'}),
             'imei': forms.TextInput(attrs={'placeholder': 'IMEI / hardware ID'}),
             'sim': forms.TextInput(attrs={'placeholder': 'SIM number'}),
@@ -74,6 +82,12 @@ class DeviceForm(forms.ModelForm):
             'status': forms.TextInput(attrs={'placeholder': 'Active / Offline'}),
             'last_location': forms.TextInput(attrs={'placeholder': 'Last known location'}),
             'last_updated': forms.TextInput(attrs={'placeholder': 'Last update timestamp'}),
+        }
+        labels = {
+            'water_level': 'Water Level',
+            'gyro': 'Gyro',
+            'gsm': 'GSM',
+            'gps': 'GPS',
         }
 
 

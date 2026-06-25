@@ -43,6 +43,28 @@ class FeatureParityTests(TestCase):
         device = Device.objects.create(user=self.user, name='Tracker 1', serial='AW-1')
         self.assertEqual(self.client.get(reverse('device_detail', args=[device.id])).status_code, 200)
 
+    def test_device_registration_saves_and_shows_modules(self):
+        response = self.client.post(reverse('add_device'), {
+            'name': 'Sensor Card 1',
+            'device_type': 'Water level monitoring card',
+            'water_level': 'on',
+            'gyro': 'on',
+            'gsm': 'on',
+            'gps': 'on',
+            'serial': 'AW-CARD-1',
+            'status': 'Active',
+        })
+
+        self.assertRedirects(response, reverse('devices'))
+        device = Device.objects.get(user=self.user, serial='AW-CARD-1')
+        self.assertEqual(device.capability_labels, ['Water Level', 'Gyro', 'GSM', 'GPS'])
+
+        devices_response = self.client.get(reverse('devices'))
+        self.assertContains(devices_response, 'Water Level')
+        self.assertContains(devices_response, 'Gyro')
+        self.assertContains(devices_response, 'GSM')
+        self.assertContains(devices_response, 'GPS')
+
     def test_settings_are_persisted(self):
         response = self.client.post(reverse('settings'), {
             'notifications_enabled': 'on', 'share_location': 'on',

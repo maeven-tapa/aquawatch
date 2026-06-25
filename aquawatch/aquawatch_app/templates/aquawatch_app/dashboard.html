@@ -51,7 +51,7 @@
 
   <section class="dashboard-card full-width">
     <div class="page-header-row"><h2>Devices</h2><a class="button button-secondary" href="{% url 'add_device' %}">Add device</a></div>
-    {% if devices %}<div class="panel-grid">{% for device in devices %}<div class="panel-card"><strong>{{ device.name }}</strong><div class="panel-meta">{{ device.serial }} &middot; {{ device.vessel }}</div><div>{{ device.owner }}</div><div class="panel-footer">Last: {{ device.last_location }} &middot; {{ device.last_updated }}</div></div>{% endfor %}</div>{% else %}<p>No devices connected yet.</p>{% endif %}
+    {% if devices %}<div class="panel-grid">{% for device in devices %}<div class="panel-card"><strong>{{ device.name }}</strong><div class="panel-meta">{{ device.serial }}{% if device.vessel %} &middot; {{ device.vessel }}{% endif %}</div><div class="capability-list" aria-label="Device capabilities">{% for capability in device.capability_labels %}<span class="capability-chip">{{ capability }}</span>{% empty %}<span class="muted">No modules selected</span>{% endfor %}</div><div>{{ device.owner }}</div><div class="panel-footer">Last: {{ device.last_location|default:"Awaiting first GPS update" }} &middot; {{ device.last_updated|default:"Just registered" }}</div></div>{% endfor %}</div>{% else %}<p>No devices connected yet.</p>{% endif %}
   </section>
 </div>
 {% endblock %}

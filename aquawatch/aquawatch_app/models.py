@@ -33,6 +33,10 @@ class Device(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=128)
     device_type = models.CharField(max_length=128, default='GPS tracker')
+    water_level = models.BooleanField(default=True)
+    gyro = models.BooleanField(default=True)
+    gsm = models.BooleanField(default=True)
+    gps = models.BooleanField(default=True)
     serial = models.CharField(max_length=128)
     imei = models.CharField(max_length=128, blank=True)
     sim = models.CharField(max_length=64, blank=True)
@@ -48,6 +52,16 @@ class Device(models.Model):
 
     def __str__(self):
         return self.name
+
+    @property
+    def capability_labels(self):
+        capabilities = [
+            (self.water_level, 'Water Level'),
+            (self.gyro, 'Gyro'),
+            (self.gsm, 'GSM'),
+            (self.gps, 'GPS'),
+        ]
+        return [label for enabled, label in capabilities if enabled]
 
 
 class Alert(models.Model):
