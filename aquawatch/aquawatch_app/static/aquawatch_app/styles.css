@@ -54,6 +54,8 @@ body.theme-light .site-header { background: rgba(243, 249, 253, 0.96); border-co
 body.theme-light .brand a, body.theme-light .site-nav a, body.theme-light label { color: #12324d; }
 body.theme-light .page-card, body.theme-light .dashboard-card, body.theme-light .panel-card { background: rgba(255, 255, 255, 0.94); border-color: rgba(7, 27, 51, 0.12); }
 body.theme-light input, body.theme-light textarea, body.theme-light select { background: #f3f8fc; color: #10253b; border-color: rgba(7, 27, 51, 0.16); }
+select option { background-color: #102238; color: #eef4ff; }
+body.theme-light select option { background-color: #ffffff; color: #10253b; }
 body.theme-light .button-secondary { background: #e1eef7; color: #12324d; }
 body.theme-light .muted, body.theme-light .panel-meta, body.theme-light .panel-footer, body.theme-light .detail-list dt { color: rgba(16, 37, 59, 0.68); }
 body.theme-light .capability-chip { background: rgba(21, 124, 161, 0.12); border-color: rgba(21, 124, 161, 0.22); color: #146179; }
@@ -775,7 +777,7 @@ body.theme-light .terms-check { border-color:rgba(16,37,59,.1); background:rgba(
 .input-with-icon input { min-height:50px; margin:0; padding-left:42px; padding-right:58px; border-color:rgba(255,255,255,.1); background:rgba(255,255,255,.045); }
 .input-with-icon input:focus { outline:2px solid rgba(82,218,236,.24); border-color:#51d9e9; }
 .input-with-icon button { position:absolute; z-index:2; right:11px; top:50%; padding:5px; border:0; color:#71ddea; background:transparent; cursor:pointer; font-size:.7rem; font-weight:800; transform:translateY(-50%); }
-.login-submit { width:100%; min-height:51px; justify-content:space-between; margin-top:7px; padding-inline:21px; background:linear-gradient(135deg,#58e5ed,#35a9ff); }
+.login-submit { width:100%; min-height:51px; justify-content:space-between; margin-top:7px; padding-inline:21px; color:#04172c; background:linear-gradient(135deg,#ff8a57,#ff6b35); box-shadow:0 12px 30px rgba(255,107,53,.22); }
 .login-divider { display:flex; align-items:center; gap:12px; margin:27px 0 18px; color:rgba(224,238,252,.42); font-size:.69rem; }
 .login-divider::before,.login-divider::after { content:""; flex:1; height:1px; background:rgba(255,255,255,.08); }
 .login-create { width:100%; min-height:48px; border:1px solid rgba(255,255,255,.09); }
