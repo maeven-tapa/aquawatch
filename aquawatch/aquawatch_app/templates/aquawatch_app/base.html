@@ -12,8 +12,7 @@
     <header class="site-header">
         <div class="brand">
             <a href="{% if user.is_authenticated %}{% url 'dashboard' %}{% else %}{% url 'welcome' %}{% endif %}">
-                <img src="{% static 'aquawatch_app/aquawatch-logo.png' %}" alt="AquaWatch logo">
-                <span>Aqua<span>Watch</span></span>
+                <img src="{% static 'aquawatch_app/aquawatch-brand.png' %}" alt="AquaWatch">
             </a>
         </div>
         <nav class="site-nav">
