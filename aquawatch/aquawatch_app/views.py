@@ -11,6 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.models import User
+from django.db import IntegrityError
 from django.shortcuts import HttpResponseRedirect, get_object_or_404, redirect, render
 from django.urls import reverse
 
@@ -167,16 +168,14 @@ def register(request):
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
-            username = form.cleaned_data.get('username')
-            if User.objects.filter(username=username).exists():
-                form.add_error('username', 'A user with that username already exists.')
+            try:
+                user = form.save()
+            except IntegrityError:
+                form.add_error(
+                    'username',
+                    'That username is already registered. Choose another username or sign in to your existing account.',
+                )
             else:
-                try:
-                    user = form.save()
-                except Exception as e:
-                    form.add_error(None, 'Unable to create account. Please try a different username.')
-                    user = None
-            if not form.errors and user:
                 user.first_name = form.cleaned_data.get('first_name', '')
                 user.last_name = form.cleaned_data.get('last_name', '')
                 user.email = form.cleaned_data.get('email', '')

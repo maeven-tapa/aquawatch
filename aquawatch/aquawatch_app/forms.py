@@ -5,17 +5,45 @@ from django.contrib.auth.models import User
 from .models import Alert, Device, MonitoringArea, Report, UserProfile
 
 
+COAST_GUARD_RANKS = [
+    ('CG Commodore (CG COMMO)', 'CG Commodore (CG COMMO)'),
+    ('CG Captain (CG CAPT)', 'CG Captain (CG CAPT)'),
+    ('CG Commander (CG CDR)', 'CG Commander (CG CDR)'),
+    ('CG Lieutenant Commander (CG LCDR)', 'CG Lieutenant Commander (CG LCDR)'),
+    ('CG Lieutenant (CG LT)', 'CG Lieutenant (CG LT)'),
+    ('CG Lieutenant Junior Grade (CG LTJG)', 'CG Lieutenant Junior Grade (CG LTJG)'),
+    ('CG Ensign (CG ENS)', 'CG Ensign (CG ENS)'),
+    ('CG Petty Officer First Class (PO1)', 'CG Petty Officer First Class (PO1)'),
+    ('CG Petty Officer Second Class (PO2)', 'CG Petty Officer Second Class (PO2)'),
+    ('CG Petty Officer Third Class (PO3)', 'CG Petty Officer Third Class (PO3)'),
+    ('CG Seaman First Class (SN1)', 'CG Seaman First Class (SN1)'),
+    ('CG Seaman Second Class (SN2)', 'CG Seaman Second Class (SN2)'),
+    ('CG Apprentice Seaman (ASN)', 'CG Apprentice Seaman (ASN)'),
+]
+
+
 class UserRegistrationForm(UserCreationForm):
     first_name = forms.CharField(max_length=30, required=False)
     last_name = forms.CharField(max_length=30, required=False)
     email = forms.EmailField(required=False)
-    role = forms.CharField(max_length=128, required=False)
+    role = forms.ChoiceField(
+        choices=[('', 'Select your rank'), *COAST_GUARD_RANKS],
+        required=True,
+    )
     station = forms.CharField(max_length=128, required=False)
     phone = forms.CharField(max_length=64, required=False)
     accepted_terms = forms.BooleanField(
         required=True,
         label='I agree to the Terms and Conditions',
     )
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if username and User.objects.filter(username=username).exists():
+            raise forms.ValidationError(
+                'That username is already registered. Choose another username or sign in to your existing account.'
+            )
+        return username
 
     class Meta:
         model = User

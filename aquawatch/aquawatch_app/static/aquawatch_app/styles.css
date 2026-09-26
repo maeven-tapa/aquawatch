@@ -589,8 +589,8 @@ label {
 .brand a > span > span { color: #ff8a57; }
 .site-nav .nav-cta { margin-left: 14px; padding: 10px 16px; border-radius: 999px; color: #03172c; background: linear-gradient(135deg,#ff8a57,#ff6b35); font-weight: 800; }
 .landing-page { margin-top: -6px; }
-.landing-hero { position: relative; display: grid; grid-template-columns: 1.02fr .98fr; min-height: 650px; overflow: hidden; border: 1px solid rgba(102,214,255,.12); border-radius: 32px; background: radial-gradient(circle at 78% 35%,rgba(0,174,255,.17),transparent 35%),linear-gradient(145deg,#06172e 0%,#071e3d 55%,#031126 100%); box-shadow: 0 34px 110px rgba(0,0,0,.3); }
-.landing-hero::before { content:""; position:absolute; inset:0; pointer-events:none; opacity:.22; background-image:linear-gradient(rgba(89,209,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(89,209,255,.08) 1px,transparent 1px); background-size:42px 42px; mask-image:linear-gradient(90deg,#000,transparent 72%); }
+.landing-hero { position: relative; display: grid; grid-template-columns: 1.02fr .98fr; min-height: 650px; overflow: hidden; border: 1px solid rgba(255,138,87,.22); border-radius: 32px; background: linear-gradient(90deg,rgba(3,14,33,.92) 0%,rgba(3,14,33,.82) 43%,rgba(3,14,33,.38) 100%),url("coastal-home-bg.png") center / cover no-repeat; box-shadow: 0 34px 110px rgba(0,0,0,.3); }
+.landing-hero::before { content:""; position:absolute; inset:0; pointer-events:none; opacity:.12; background-image:linear-gradient(rgba(255,170,132,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(255,170,132,.08) 1px,transparent 1px); background-size:42px 42px; mask-image:linear-gradient(90deg,#000,transparent 72%); }
 .hero-copy { position:relative; z-index:2; align-self:center; padding:70px 20px 70px 62px; }
 .eyebrow,.section-kicker { color:#ff8a57; font-size:.76rem; font-weight:800; letter-spacing:.13em; text-transform:uppercase; }
 .eyebrow { display:flex; align-items:center; gap:9px; }
