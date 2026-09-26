@@ -63,8 +63,8 @@ class MonitoringAreaForm(forms.ModelForm):
         fields = ['label', 'latitude', 'longitude', 'image_url']
         widgets = {
             'label': forms.TextInput(attrs={'placeholder': 'Monitoring area name'}),
-            'latitude': forms.NumberInput(attrs={'step': '0.0001'}),
-            'longitude': forms.NumberInput(attrs={'step': '0.0001'}),
+            'latitude': forms.NumberInput(attrs={'step': 'any'}),
+            'longitude': forms.NumberInput(attrs={'step': 'any'}),
             'image_url': forms.URLInput(attrs={'placeholder': 'Optional image URL'}),
         }
 

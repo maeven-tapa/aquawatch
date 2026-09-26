@@ -4,9 +4,11 @@
   <div id="map" class="mobile-map-canvas"></div>
   <div class="map-top-controls">
     <a class="button map-report-button" href="{% url 'reports' %}">Submit incident report</a>
+    <button class="button map-fishing-zone-button" id="show-fishing-zone" type="button">Show Fishing Zone</button>
     {% if profile.share_location %}<button class="button map-location-button" id="show-my-location" type="button">Show My Location</button>{% else %}<a class="button button-secondary map-location-button" href="{% url 'settings' %}">Enable Location</a>{% endif %}
     <span class="map-location-status" id="location-status">Tap Show My Location to center the map</span>
   </div>
+  <div class="map-zone-legend"><span aria-hidden="true"></span>Amaya, Tanza Municipal Fishing Zone · 500 m radius</div>
   <article class="mobile-map-details" id="monitoring-details" hidden>
     <button class="map-details-close" id="close-details" type="button" aria-label="Close monitoring details">&times;</button>
     <div class="map-details-copy"><h1>{{ area.label }}</h1><p>Monitoring area details</p></div>
@@ -34,8 +36,18 @@ function initMap() {
   const map = new google.maps.Map(document.getElementById('map'),{center:monitoringCenter,zoom:10,disableDefaultUI:true,zoomControl:true,gestureHandling:'greedy',styles:{% if aqua_dark_mode %}darkStyle{% else %}null{% endif %}});
   const radius = new google.maps.Circle({map,center:monitoringCenter,radius:20000,fillColor:'#00A8B5',fillOpacity:.14,strokeColor:'#00A8B5',strokeOpacity:.8,strokeWeight:3});
   const marker = new google.maps.Marker({map,position:monitoringCenter,title:'{{ area.label|escapejs }}',animation:google.maps.Animation.DROP});
-  map.fitBounds(radius.getBounds(),64);
-  marker.addListener('click',()=>{details.hidden=false;map.fitBounds(radius.getBounds(),64);});
+  const fishingZoneCenter = {lat:14.394530,lng:120.825889};
+  const fishingZone = new google.maps.Circle({map,center:fishingZoneCenter,radius:500,clickable:true,fillColor:'#ff6b35',fillOpacity:.22,strokeColor:'#ff8a57',strokeOpacity:.95,strokeWeight:3});
+  const fishingZoneMarker = new google.maps.Marker({map,position:fishingZoneCenter,title:'Amaya, Tanza Municipal Fishing Zone',icon:{path:google.maps.SymbolPath.CIRCLE,scale:9,fillColor:'#ff6b35',fillOpacity:1,strokeColor:'#ffffff',strokeWeight:2}});
+  const fishingZoneInfo = new google.maps.InfoWindow({content:'<strong>Amaya, Tanza Municipal Fishing Zone</strong><br>500 m radius<br>14.394530, 120.825889'});
+  const mapBounds = radius.getBounds();
+  mapBounds.extend(fishingZone.getBounds().getNorthEast());
+  mapBounds.extend(fishingZone.getBounds().getSouthWest());
+  map.fitBounds(mapBounds,64);
+  marker.addListener('click',()=>{details.hidden=false;map.fitBounds(mapBounds,64);});
+  fishingZone.addListener('click',()=>fishingZoneInfo.open({map,anchor:fishingZoneMarker}));
+  fishingZoneMarker.addListener('click',()=>fishingZoneInfo.open({map,anchor:fishingZoneMarker}));
+  document.getElementById('show-fishing-zone').addEventListener('click',()=>{details.hidden=true;map.panTo(fishingZoneCenter);map.setZoom(14);});
   map.addListener('click',()=>{details.hidden=true;});
   document.getElementById('close-details').addEventListener('click',()=>{details.hidden=true;});
   {% if profile.share_location %}
