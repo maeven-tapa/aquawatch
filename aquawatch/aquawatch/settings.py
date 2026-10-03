@@ -99,9 +99,11 @@ WSGI_APPLICATION = 'aquawatch.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+SQLITE_DATABASE_PATH = Path(os.environ.get('AQUAWATCH_SQLITE_PATH', str(BASE_DIR / 'db.sqlite3')))
+
 DATABASES = {
     'default': dj_database_url.parse(
-        os.environ.get('DATABASE_URL', f'sqlite:///{BASE_DIR / "db.sqlite3"}'),
+        os.environ.get('DATABASE_URL', f'sqlite:///{SQLITE_DATABASE_PATH.as_posix()}'),
         conn_max_age=600,
     )
 }
@@ -153,5 +155,20 @@ STORAGES = {
     },
 }
 
+if DATABASES['default']['ENGINE'] == 'django.db.backends.sqlite3':
+    # Serialize SQLite writes before reading a sync receipt; retries then see committed event IDs.
+    DATABASES['default']['OPTIONS'] = {'timeout': 20, 'transaction_mode': 'IMMEDIATE'}
+
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = Path(os.environ.get('AQUAWATCH_MEDIA_ROOT', str(BASE_DIR / 'media')))
+
+# Mobile verification sends email from the backend, never from credentials in an APK.
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = os.environ.get('EMAIL_HOST', '')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '587'))
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True').lower() == 'true'
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER or 'noreply@aquawatch.tech')
+EMAIL_TIMEOUT = 20
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

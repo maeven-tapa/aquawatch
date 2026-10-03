@@ -1,8 +1,16 @@
 from django.urls import path
 
 from . import views
+from . import api
 
 urlpatterns = [
+    path('api/v1/health/', api.health, name='api_health'),
+    path('api/v1/auth/login/', api.login, name='api_login'),
+    path('api/v1/auth/register/', api.register, name='api_register'),
+    path('api/v1/auth/request-code/', api.request_signup_code, name='api_request_code'),
+    path('api/v1/auth/logout/', api.logout, name='api_logout'),
+    path('api/v1/auth/password/', api.change_password, name='api_password'),
+    path('api/v1/sync/', api.sync, name='api_sync'),
     path('', views.welcome, name='welcome'),
     path('login/', views.user_login, name='login'),
     path('forgot-password/', views.forgot_password, name='forgot_password'),

@@ -1,5 +1,7 @@
 # AquaWatch
 
+Android/API integration and Render deployment: [mobile API guide](docs/mobile-api.md).
+
 ## Run locally on Windows
 
 From the repository root in PowerShell:
