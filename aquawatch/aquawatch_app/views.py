@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.models import User
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 from django.shortcuts import HttpResponseRedirect, get_object_or_404, redirect, render
 from django.urls import reverse
 
@@ -26,6 +26,7 @@ from .forms import (
     UserRegistrationForm,
 )
 from .models import Alert, Device, MonitoringArea, Report, UserProfile
+from .accounts import EMAIL_ALREADY_REGISTERED, email_is_registered
 
 
 def get_or_create_profile(user: User) -> UserProfile:
@@ -169,31 +170,30 @@ def register(request):
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
             try:
-                user = form.save()
+                with transaction.atomic():
+                    user = form.save()
+                    profile = get_or_create_profile(user)
+                    profile.role = form.cleaned_data.get('role', profile.role)
+                    profile.station = form.cleaned_data.get('station', profile.station)
+                    profile.phone = form.cleaned_data.get('phone', profile.phone)
+                    profile.save()
+                    MonitoringArea.objects.get_or_create(user=user)
+                    Alert.objects.get_or_create(
+                        user=user,
+                        type='Coastal security',
+                        location='Manila Bay',
+                        time='08:15',
+                        severity='Medium',
+                        defaults={'description': 'Create your first alert to keep the team informed.'},
+                    )
             except IntegrityError:
-                form.add_error(
-                    'username',
-                    'That username is already registered. Choose another username or sign in to your existing account.',
-                )
+                if email_is_registered(form.cleaned_data['email']):
+                    form.add_error('email', EMAIL_ALREADY_REGISTERED)
+                elif User.objects.filter(username=form.cleaned_data['username']).exists():
+                    form.add_error('username', 'That username is already registered. Choose another username or sign in.')
+                else:
+                    raise
             else:
-                user.first_name = form.cleaned_data.get('first_name', '')
-                user.last_name = form.cleaned_data.get('last_name', '')
-                user.email = form.cleaned_data.get('email', '')
-                user.save()
-                profile = get_or_create_profile(user)
-                profile.role = form.cleaned_data.get('role', profile.role)
-                profile.station = form.cleaned_data.get('station', profile.station)
-                profile.phone = form.cleaned_data.get('phone', profile.phone)
-                profile.save()
-                MonitoringArea.objects.get_or_create(user=user)
-                Alert.objects.get_or_create(
-                    user=user,
-                    type='Coastal security',
-                    location='Manila Bay',
-                    time='08:15',
-                    severity='Medium',
-                    defaults={'description': 'Create your first alert to keep the team informed.'},
-                )
                 login(request, user)
                 return redirect('location')
     else:
@@ -337,10 +337,18 @@ def profile(request):
             account_form = AccountForm(request.POST, instance=request.user)
             details_form = ProfileDetailsForm(request.POST, request.FILES, instance=profile_record)
             if account_form.is_valid() and details_form.is_valid():
-                account_form.save()
-                details_form.save()
-                messages.success(request, 'Profile saved.')
-                return redirect('profile')
+                try:
+                    with transaction.atomic():
+                        account_form.save()
+                        details_form.save()
+                except IntegrityError:
+                    if email_is_registered(account_form.cleaned_data['email'], request.user.pk):
+                        account_form.add_error('email', EMAIL_ALREADY_REGISTERED)
+                    else:
+                        raise
+                else:
+                    messages.success(request, 'Profile saved.')
+                    return redirect('profile')
         elif action == 'password':
             password_form = PasswordChangeForm(request.user, request.POST)
             if password_form.is_valid():

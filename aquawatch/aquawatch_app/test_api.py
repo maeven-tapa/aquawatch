@@ -4,6 +4,7 @@ from datetime import timedelta
 from unittest.mock import patch
 
 from django.contrib.auth.models import User
+from django.db import IntegrityError, transaction
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
@@ -61,10 +62,12 @@ class MobileApiTests(TestCase):
         self.assertEqual(MobileToken.objects.get(digest=hashlib.sha256(self.token.encode()).hexdigest()).user, self.user)
         self.assertFalse(MobileToken.objects.filter(digest=self.token).exists())
 
-    def test_ambiguous_email_cannot_select_another_account(self):
-        self.other.email = self.user.email
-        self.other.save()
-        self.assertEqual(self.post('api_login', {'email': self.user.email, 'password': 'Harbor!Storm2026'}).status_code, 401)
+    def test_duplicate_email_cannot_be_assigned_to_another_account(self):
+        with self.assertRaises(IntegrityError), transaction.atomic():
+            User.objects.filter(pk=self.other.pk).update(email=' OFFICER@EXAMPLE.COM ')
+        self.other.refresh_from_db()
+        self.assertEqual(self.other.email, 'other@example.com')
+        self.assertEqual(self.post('api_login', {'email': self.user.email, 'password': 'Harbor!Storm2026'}).status_code, 200)
 
     def test_inactive_user_cannot_login_or_use_token(self):
         self.user.is_active = False

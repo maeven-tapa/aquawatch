@@ -3,6 +3,7 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import User
 
 from .models import Alert, Device, MonitoringArea, Report, UserProfile
+from .accounts import EMAIL_ALREADY_REGISTERED, email_is_registered, normalize_email
 
 
 COAST_GUARD_RANKS = [
@@ -25,7 +26,7 @@ COAST_GUARD_RANKS = [
 class UserRegistrationForm(UserCreationForm):
     first_name = forms.CharField(max_length=30, required=False)
     last_name = forms.CharField(max_length=30, required=False)
-    email = forms.EmailField(required=False)
+    email = forms.EmailField(required=True, max_length=254)
     role = forms.ChoiceField(
         choices=[('', 'Select your rank'), *COAST_GUARD_RANKS],
         required=True,
@@ -44,6 +45,12 @@ class UserRegistrationForm(UserCreationForm):
                 'That username is already registered. Choose another username or sign in to your existing account.'
             )
         return username
+
+    def clean_email(self):
+        email = normalize_email(self.cleaned_data['email'])
+        if email_is_registered(email):
+            raise forms.ValidationError(EMAIL_ALREADY_REGISTERED)
+        return email
 
     class Meta:
         model = User
@@ -138,6 +145,14 @@ class ReportForm(forms.ModelForm):
 
 
 class AccountForm(forms.ModelForm):
+    email = forms.EmailField(required=True, max_length=254)
+
+    def clean_email(self):
+        email = normalize_email(self.cleaned_data['email'])
+        if email_is_registered(email, exclude_user_id=self.instance.pk):
+            raise forms.ValidationError(EMAIL_ALREADY_REGISTERED)
+        return email
+
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'email']

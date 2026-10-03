@@ -21,6 +21,7 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
 from .models import Alert, Device, DeviceReading, MobileAuthWindow, MobileToken, MonitoringArea, Report, SignupChallenge, SyncReceipt, UserProfile
+from .accounts import EMAIL_ALREADY_REGISTERED, email_is_registered, normalize_email
 
 
 class ApiError(Exception):
@@ -160,11 +161,11 @@ def login(request, data):
 
 @api(['POST'], protected=False)
 def request_signup_code(request, data):
-    email = text(data, 'email', 150, required=True).lower()
+    email = normalize_email(text(data, 'email', 150, required=True))
     validate_email(email)
     throttle(request, email)
-    if User.objects.filter(email__iexact=email).exists():
-        raise ApiError('This account already exists. Sign in instead.', 409)
+    if email_is_registered(email):
+        raise ApiError(EMAIL_ALREADY_REGISTERED, 409)
     if settings.EMAIL_BACKEND.endswith('smtp.EmailBackend') and not settings.EMAIL_HOST:
         raise ApiError('Email verification is not configured on the server. Contact AquaWatch support.', 503)
     existing = SignupChallenge.objects.filter(email=email).first()
@@ -183,12 +184,14 @@ def request_signup_code(request, data):
 
 @api(['POST'], protected=False)
 def register(request, data):
-    email = text(data, 'email', 150, required=True).lower()
+    email = normalize_email(text(data, 'email', 150, required=True))
     validate_email(email)
     throttle(request, email)
     if not boolean(data, 'accepted_terms'):
         raise ApiError('Accept the Terms and Conditions.')
-    if User.objects.filter(email__iexact=email).exists() or User.objects.filter(username=email).exists():
+    if email_is_registered(email):
+        raise ApiError(EMAIL_ALREADY_REGISTERED, 409)
+    if User.objects.filter(username=email).exists():
         raise ApiError('This account already exists. Sign in using your web password.', 409)
     user = User(username=email, email=email, first_name=text(data, 'first_name', 150),
                 last_name=text(data, 'last_name', 150))

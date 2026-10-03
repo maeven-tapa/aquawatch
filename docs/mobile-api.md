@@ -1,6 +1,6 @@
 # Android and Render integration
 
-The Django API uses the same User, Device, Report, Alert, UserProfile, and MonitoringArea records as the existing website. No templates, CSS, or browser page handlers were changed. The Android build defaults to `https://aquawatch-myjz.onrender.com/`.
+The Django API uses the same User, Device, Report, Alert, UserProfile, and MonitoringArea records as the website. Web signup now requires a unique email, shares the mobile account database, and prevents duplicate email addresses when editing a profile. The Android build defaults to `https://aquawatch.tech/`.
 
 ## Deploy the backend on your existing Render service
 
@@ -8,16 +8,18 @@ The Django API uses the same User, Device, Report, Alert, UserProfile, and Monit
 2. Keep the current SQLite database on a persistent disk. Before attaching a disk or deploying, back up the current **live** database and media; the repository's `db.sqlite3` might not contain the current live records. Confirm the existing disk's mount path, restore the backup there, and set `AQUAWATCH_SQLITE_PATH` to the database's absolute path, for example `/var/data/db.sqlite3`. Keep `DATABASE_URL` unset when using this option; a configured `DATABASE_URL` takes precedence. Optionally set `AQUAWATCH_MEDIA_ROOT=/var/data/media` after preserving the existing uploads. A committed SQLite file in the service directory is not durable storage on Render's default filesystem. See [Render's persistent storage guide](https://render.com/docs/disks). This change does not attach a disk, move existing records, switch databases, or purchase hosting. Without the new environment variables, local database/media paths stay unchanged.
 3. Keep the existing root directory and entry point. For the included Blueprint, the root directory is `aquawatch`, the build command is `pip install -r requirements.txt && python manage.py collectstatic --noinput`, and the start command is `python manage.py migrate && gunicorn aquawatch.wsgi:application --log-file -`. If the service uses the repository root instead, prefix the management command with `aquawatch/` and run Gunicorn with `--chdir aquawatch`.
 4. Configure mobile signup email using Render environment variables: `EMAIL_HOST`, `EMAIL_PORT` (default 587), `EMAIL_USE_TLS` (default True), `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, and `DEFAULT_FROM_EMAIL`. For Gmail, use `smtp.gmail.com`, port 587, TLS, the sender's email, and an app password. Keep the password in Render; it is no longer embedded in the Android APK. Existing accounts can log in without these email settings. Choose a mail transport that your Render plan permits.
-5. Keep a stable `SECRET_KEY` and the existing `ALLOWED_HOSTS`. Deploying applies migration `0004` before starting the web process. The new tables and nullable fields preserve existing records.
+5. Keep a stable `SECRET_KEY` and the existing `ALLOWED_HOSTS`. Deploying applies migrations `0004` and `0005` before starting the web process. The new tables and nullable fields preserve existing records. Migration `0005` trims and lowercases existing emails, then creates a unique index on non-empty emails in Django's user table. Existing accounts without an email remain intact. If accounts already share an email, migration stops and lists their user IDs; assign each account a distinct verified email and rerun `python manage.py migrate`. It does not delete or merge accounts. Rolling back `0005` removes the index but retains normalized emails. Because the user table belongs to Django's auth app, the index is managed explicitly by this migration; verify/recreate it if a future auth migration rebuilds that table.
 6. Verify `GET /api/v1/health/` returns `{"service":"aquawatch","api_version":1}`. A 404 means the API has not been deployed to that service. A health response alone does not verify database access; follow with a login and sync test.
 
 ## Test the connection
 
 Install the new Android debug APK. Sign in with your existing web email/password or web username/password. Old accounts that exist only on the phone are not automatically Django accounts: create a server account first, using the same email to import the phone's registered devices. New mobile accounts use their email as the web username.
 
+Create a web account at `/register/`, then log into Android using that email and password. Attempt a second signup on both platforms with the same email, including uppercase letters or surrounding spaces; both must reject it and direct you to sign in. Mobile-created accounts can use their email and password on the web login page. Web-created accounts use their chosen username on the web login page. These rules take effect on Render after deploying the updated backend and running migration `0005`; this change does not require a new Android APK.
+
 In Settings, open **Incident reports**, submit a report, then use **Sync now**. Confirm the report appears on the website for that account. Register a device, receive a status or SOS SMS, and confirm the website shows its location and alert after the phone has internet. Create or edit a device on the website, then sync the phone and confirm the changes appear there. Switch accounts and verify device/report lists are isolated.
 
-For an alternate HTTPS hostname, add `aquawatch.api.url=https://your-host/` to Android's untracked `local.properties`, then rebuild. Keep the URL at the host root; the client appends `/api/v1/`. Changing the server requires signing in again and uses separate local storage.
+For an alternate HTTPS hostname, add `aquawatch.api.url=https://your-host/` to Android's untracked `local.properties`, then rebuild. Keep the URL at the host root; the client appends `/api/v1/`. Changing the server requires signing in again. The known AquaWatch custom domains and Render hostname share the original phone cache; other servers use separate local storage.
 
 ## API contract
 
@@ -69,7 +71,7 @@ The sync endpoint accepts up to 100 events and 512 KB per request. Android limit
 - Profile/monitoring images stay on the phone; binary photo uploads are not implemented. Notification/display settings remain platform-specific. Password recovery is not implemented by this API.
 - The API snapshot currently returns complete lists. Pagination and a separate telemetry ingestion service can be added if data volume grows.
 - SQLite uses a 20-second lock timeout and `IMMEDIATE` transactions to serialize sync writes. Keep the disk-backed service as a single instance. See [Django's SQLite guidance](https://docs.djangoproject.com/en/6.0/ref/databases/#sqlite-notes). PostgreSQL remains an optional future scaling path, not a requirement for this implementation.
-- No Render account/environment was changed and no production deployment was performed from this workspace. Complete the deployment steps before expecting live sync.
+- No Render account/environment was changed and no production deployment was performed from this workspace. The user deployed the backend separately; its health and protected sync endpoints were verified live on `aquawatch.tech`. Authenticated account sync and email delivery still require testing with a real account.
 
 ## Verification
 
