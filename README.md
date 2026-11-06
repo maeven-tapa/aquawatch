@@ -2,6 +2,8 @@
 
 Android/API integration and Render deployment: [mobile API guide](docs/mobile-api.md).
 
+Fishing habitats, tide planning, and labeled device history: [feature guide](docs/fishing-features.md).
+
 ## Run locally on Windows
 
 From the repository root in PowerShell:

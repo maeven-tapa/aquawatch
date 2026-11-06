@@ -1,0 +1,1004 @@
+{
+  "version": 1,
+  "timeZone": "Asia/Manila",
+  "zones": [
+    {
+      "id": "amaya-original",
+      "title": "Amaya habitat reference",
+      "center": {
+        "lat": 14.39453,
+        "lng": 120.825889
+      },
+      "boundary": [
+        {
+          "lat": 14.39641645346748,
+          "lng": 120.82199381100352
+        },
+        {
+          "lat": 14.398033413582464,
+          "lng": 120.82421963328723
+        },
+        {
+          "lat": 14.397404595759971,
+          "lng": 120.82700191114185
+        },
+        {
+          "lat": 14.395877466762487,
+          "lng": 120.82950596121103
+        },
+        {
+          "lat": 14.393811351060007,
+          "lng": 120.82876402044978
+        },
+        {
+          "lat": 14.39237405318002,
+          "lng": 120.82969144640133
+        },
+        {
+          "lat": 14.391296079770031,
+          "lng": 120.82663094076123
+        },
+        {
+          "lat": 14.392194390945024,
+          "lng": 120.82440511847753
+        },
+        {
+          "lat": 14.391745235357527,
+          "lng": 120.82227203878898
+        },
+        {
+          "lat": 14.394170675530003,
+          "lng": 120.82115912764714
+        }
+      ],
+      "proposed": true
+    },
+    {
+      "id": "amaya-proposed-1",
+      "title": "Amaya habitat area 1",
+      "center": {
+        "lat": 14.4072,
+        "lng": 120.8094
+      },
+      "boundary": [
+        {
+          "lat": 14.40926611570248,
+          "lng": 120.80374238045987
+        },
+        {
+          "lat": 14.411781386992454,
+          "lng": 120.80643206843796
+        },
+        {
+          "lat": 14.41124240028746,
+          "lng": 120.80893626069343
+        },
+        {
+          "lat": 14.41223054257995,
+          "lng": 120.81106946150364
+        },
+        {
+          "lat": 14.409445777937478,
+          "lng": 120.81413014092699
+        },
+        {
+          "lat": 14.407020337765001,
+          "lng": 120.81515036740143
+        },
+        {
+          "lat": 14.404415235357527,
+          "lng": 120.81283167086859
+        },
+        {
+          "lat": 14.403427093065037,
+          "lng": 120.80958549572263
+        },
+        {
+          "lat": 14.404235573122529,
+          "lng": 120.80717405132847
+        },
+        {
+          "lat": 14.405583039885016,
+          "lng": 120.80429886762775
+        }
+      ],
+      "proposed": true
+    },
+    {
+      "id": "amaya-proposed-2",
+      "title": "Amaya habitat area 2",
+      "center": {
+        "lat": 14.383,
+        "lng": 120.8062
+      },
+      "boundary": [
+        {
+          "lat": 14.386772906934961,
+          "lng": 120.80323239016687
+        },
+        {
+          "lat": 14.388839022637441,
+          "lng": 120.80527262192714
+        },
+        {
+          "lat": 14.387761049227452,
+          "lng": 120.80777654272386
+        },
+        {
+          "lat": 14.38497628458498,
+          "lng": 120.80981677448413
+        },
+        {
+          "lat": 14.382640675530002,
+          "lng": 120.80888939641127
+        },
+        {
+          "lat": 14.37994574200503,
+          "lng": 120.81055867694242
+        },
+        {
+          "lat": 14.377520301832554,
+          "lng": 120.80712737807286
+        },
+        {
+          "lat": 14.378777937477542,
+          "lng": 120.80471619508344
+        },
+        {
+          "lat": 14.381472871002515,
+          "lng": 120.80258322551587
+        },
+        {
+          "lat": 14.384167804527488,
+          "lng": 120.80193406086488
+        }
+      ],
+      "proposed": true
+    },
+    {
+      "id": "amaya-proposed-3",
+      "title": "Amaya habitat area 3",
+      "center": {
+        "lat": 14.3997,
+        "lng": 120.7833
+      },
+      "boundary": [
+        {
+          "lat": 14.401137297879984,
+          "lng": 120.77532395206818
+        },
+        {
+          "lat": 14.403472906934962,
+          "lng": 120.7778280601398
+        },
+        {
+          "lat": 14.403203413582464,
+          "lng": 120.78172333936232
+        },
+        {
+          "lat": 14.404371218109953,
+          "lng": 120.78394921320375
+        },
+        {
+          "lat": 14.402484764642471,
+          "lng": 120.78719527922252
+        },
+        {
+          "lat": 14.401406791232482,
+          "lng": 120.79090506895825
+        },
+        {
+          "lat": 14.398352533237512,
+          "lng": 120.78997762152432
+        },
+        {
+          "lat": 14.396915235357527,
+          "lng": 120.78636057653198
+        },
+        {
+          "lat": 14.39763388429752,
+          "lng": 120.78274353153964
+        },
+        {
+          "lat": 14.396016924182536,
+          "lng": 120.77894099706052
+        },
+        {
+          "lat": 14.398083039885016,
+          "lng": 120.77597316527192
+        }
+      ],
+      "proposed": true
+    },
+    {
+      "id": "amaya-proposed-4",
+      "title": "Amaya habitat area 4",
+      "center": {
+        "lat": 14.3718,
+        "lng": 120.7894
+      },
+      "boundary": [
+        {
+          "lat": 14.374225440172475,
+          "lng": 120.78439240933199
+        },
+        {
+          "lat": 14.37593223140496,
+          "lng": 120.786896204666
+        },
+        {
+          "lat": 14.37494408911247,
+          "lng": 120.7898636658026
+        },
+        {
+          "lat": 14.375662738052462,
+          "lng": 120.79320205958126
+        },
+        {
+          "lat": 14.372698311174991,
+          "lng": 120.79542765543371
+        },
+        {
+          "lat": 14.370093208767518,
+          "lng": 120.79403665802593
+        },
+        {
+          "lat": 14.368027093065038,
+          "lng": 120.79106919688934
+        },
+        {
+          "lat": 14.368566079770032,
+          "lng": 120.78847266839482
+        },
+        {
+          "lat": 14.367577937477543,
+          "lng": 120.78596887306081
+        },
+        {
+          "lat": 14.370542364355012,
+          "lng": 120.78365054404784
+        }
+      ],
+      "proposed": true
+    },
+    {
+      "id": "amaya-proposed-5",
+      "title": "Amaya habitat area 5",
+      "center": {
+        "lat": 14.4185,
+        "lng": 120.7662
+      },
+      "boundary": [
+        {
+          "lat": 14.422003413582464,
+          "lng": 120.76109860906925
+        },
+        {
+          "lat": 14.424878009342436,
+          "lng": 120.7637884333782
+        },
+        {
+          "lat": 14.423800035932446,
+          "lng": 120.76675651537425
+        },
+        {
+          "lat": 14.424608515989938,
+          "lng": 120.76972459737033
+        },
+        {
+          "lat": 14.421194933524973,
+          "lng": 120.771857906305
+        },
+        {
+          "lat": 14.418859324469997,
+          "lng": 120.77055937043173
+        },
+        {
+          "lat": 14.415984728710026,
+          "lng": 120.77204341142976
+        },
+        {
+          "lat": 14.412930470715056,
+          "lng": 120.7686115666218
+        },
+        {
+          "lat": 14.413738950772547,
+          "lng": 120.7653652269386
+        },
+        {
+          "lat": 14.412750808480057,
+          "lng": 120.76184062956827
+        },
+        {
+          "lat": 14.41751185770751,
+          "lng": 120.76017108344548
+        }
+      ],
+      "proposed": true
+    },
+    {
+      "id": "amaya-proposed-6",
+      "title": "Amaya habitat area 6",
+      "center": {
+        "lat": 14.3876,
+        "lng": 120.7553
+      },
+      "boundary": [
+        {
+          "lat": 14.388408480057493,
+          "lng": 120.74630424745679
+        },
+        {
+          "lat": 14.39065425799497,
+          "lng": 120.74917917868194
+        },
+        {
+          "lat": 14.390115271289975,
+          "lng": 120.75270328792567
+        },
+        {
+          "lat": 14.391822062522458,
+          "lng": 120.75557821915082
+        },
+        {
+          "lat": 14.390384764642473,
+          "lng": 120.75928780782844
+        },
+        {
+          "lat": 14.389216960114984,
+          "lng": 120.76420301282627
+        },
+        {
+          "lat": 14.386072871002517,
+          "lng": 120.76271917735524
+        },
+        {
+          "lat": 14.384096586417536,
+          "lng": 120.75891684896068
+        },
+        {
+          "lat": 14.384905066475028,
+          "lng": 120.75492904113224
+        },
+        {
+          "lat": 14.383377937477544,
+          "lng": 120.75121945245463
+        },
+        {
+          "lat": 14.385444053180022,
+          "lng": 120.74760260349396
+        }
+      ],
+      "proposed": true
+    },
+    {
+      "id": "amaya-proposed-7",
+      "title": "Amaya habitat area 7",
+      "center": {
+        "lat": 14.3677,
+        "lng": 120.7701
+      },
+      "boundary": [
+        {
+          "lat": 14.369316960114983,
+          "lng": 120.76592708427873
+        },
+        {
+          "lat": 14.371203413582464,
+          "lng": 120.76852356517196
+        },
+        {
+          "lat": 14.370484764642471,
+          "lng": 120.77084185168378
+        },
+        {
+          "lat": 14.36967628458498,
+          "lng": 120.77390198987938
+        },
+        {
+          "lat": 14.367161013295005,
+          "lng": 120.77492203594457
+        },
+        {
+          "lat": 14.36464574200503,
+          "lng": 120.77260374943276
+        },
+        {
+          "lat": 14.365184728710025,
+          "lng": 120.77000726853953
+        },
+        {
+          "lat": 14.364016924182536,
+          "lng": 120.7674107876463
+        },
+        {
+          "lat": 14.36653219547251,
+          "lng": 120.76518523259494
+        }
+      ],
+      "proposed": true
+    },
+    {
+      "id": "amaya-proposed-8",
+      "title": "Amaya habitat area 8",
+      "center": {
+        "lat": 14.3779,
+        "lng": 120.7351
+      },
+      "boundary": [
+        {
+          "lat": 14.382481386992454,
+          "lng": 120.73111236529346
+        },
+        {
+          "lat": 14.384367840459936,
+          "lng": 120.73417264309151
+        },
+        {
+          "lat": 14.38293054257995,
+          "lng": 120.7373256565804
+        },
+        {
+          "lat": 14.380505102407474,
+          "lng": 120.73973678454249
+        },
+        {
+          "lat": 14.378349155587497,
+          "lng": 120.738809427634
+        },
+        {
+          "lat": 14.37601354653252,
+          "lng": 120.74112781990524
+        },
+        {
+          "lat": 14.372420301832555,
+          "lng": 120.7380675421072
+        },
+        {
+          "lat": 14.371432159540065,
+          "lng": 120.73482179292745
+        },
+        {
+          "lat": 14.373588106360044,
+          "lng": 120.73241066496536
+        },
+        {
+          "lat": 14.376462702120016,
+          "lng": 120.72972132993071
+        },
+        {
+          "lat": 14.37996611570248,
+          "lng": 120.72935038716732
+        }
+      ],
+      "proposed": true
+    },
+    {
+      "id": "amaya-proposed-9",
+      "title": "Amaya habitat area 9",
+      "center": {
+        "lat": 14.407,
+        "lng": 120.7317
+      },
+      "boundary": [
+        {
+          "lat": 14.409874595759971,
+          "lng": 120.72511490775166
+        },
+        {
+          "lat": 14.41212037369745,
+          "lng": 120.72845382776491
+        },
+        {
+          "lat": 14.410952569169961,
+          "lng": 120.7318854955563
+        },
+        {
+          "lat": 14.412300035932446,
+          "lng": 120.73559540668212
+        },
+        {
+          "lat": 14.408706791232483,
+          "lng": 120.73893432669536
+        },
+        {
+          "lat": 14.40592202659001,
+          "lng": 120.73745036224503
+        },
+        {
+          "lat": 14.40304743083004,
+          "lng": 120.73485342445696
+        },
+        {
+          "lat": 14.40403557312253,
+          "lng": 120.73132900888741
+        },
+        {
+          "lat": 14.40196945742005,
+          "lng": 120.72817558443047
+        },
+        {
+          "lat": 14.405293208767517,
+          "lng": 120.72483666441723
+        }
+      ],
+      "proposed": true
+    },
+    {
+      "id": "amaya-proposed-10",
+      "title": "Amaya habitat area 10",
+      "center": {
+        "lat": 14.4318,
+        "lng": 120.7437
+      },
+      "boundary": [
+        {
+          "lat": 14.436740711462452,
+          "lng": 120.74036070837406
+        },
+        {
+          "lat": 14.43880682716493,
+          "lng": 120.74286517709352
+        },
+        {
+          "lat": 14.437459360402444,
+          "lng": 120.7459261944173
+        },
+        {
+          "lat": 14.434584764642473,
+          "lng": 120.74852342123748
+        },
+        {
+          "lat": 14.432069493352499,
+          "lng": 120.74750308212955
+        },
+        {
+          "lat": 14.42892540424003,
+          "lng": 120.7490799698418
+        },
+        {
+          "lat": 14.425332159540066,
+          "lng": 120.74546240391369
+        },
+        {
+          "lat": 14.426320301832556,
+          "lng": 120.74240138658992
+        },
+        {
+          "lat": 14.425242328422566,
+          "lng": 120.73934036926613
+        },
+        {
+          "lat": 14.42982371541502,
+          "lng": 120.73813451395677
+        },
+        {
+          "lat": 14.433506791232483,
+          "lng": 120.73896933686325
+        }
+      ],
+      "proposed": true
+    }
+  ],
+  "fish": [
+    {
+      "id": "sardines",
+      "localName": "Salinas / Tunsoy",
+      "identification": "Sardines • Sardinella spp.",
+      "habitat": "Schools in coastal seawater, swimming in the water column rather than living on the seabed.",
+      "note": "Salinas and Tunsoy are overlapping local names for different sardines. Cavite reports tunsoy; the exact species at this pin needs identification.",
+      "source": {
+        "title": "FAO — sardine habitat",
+        "url": "https://www.fao.org/4/ac482e/ac482e18.pdf"
+      }
+    },
+    {
+      "id": "indian-mackerel",
+      "localName": "Kabayas / Alumahan",
+      "identification": "Indian mackerel • Rastrelliger kanagurta",
+      "habitat": "Swims in large schools in coastal open water. Young fish eat phytoplankton; adults eat larger plankton, including fish and shrimp larvae.",
+      "source": {
+        "title": "FAO — Indian mackerel habitat",
+        "url": "https://www.fao.org/4/ad471e/ad471e55.pdf"
+      }
+    },
+    {
+      "id": "anchovies",
+      "localName": "Dilis",
+      "identification": "Anchovies • Stolephorus spp.",
+      "habitat": "Small fish living in the water column of coastal waters; several species form schools.",
+      "source": {
+        "title": "FAO — coastal anchovies",
+        "url": "https://www.fao.org/4/i2741e/i2741e10a.pdf"
+      }
+    },
+    {
+      "id": "ponyfish",
+      "localName": "Sapsap",
+      "identification": "Slipmouths / ponyfish • Leiognathidae",
+      "habitat": "Generally lives near the seabed in shallow coastal waters over sand or mud. Habitat varies among ponyfish species.",
+      "source": {
+        "title": "Research field guide — ponyfish habitats",
+        "url": "https://www.museum.kagoshima-u.ac.jp/staff/motomura/2021_01_BidongFishes.pdf"
+      }
+    },
+    {
+      "id": "threadfin-bream",
+      "localName": "Bisugo",
+      "identification": "Threadfin breams • Nemipterus spp.",
+      "habitat": "Lives near sandy or muddy seabeds in coastal marine waters. The different species occupy different depths.",
+      "source": {
+        "title": "Philippine fish field guide — threadfin breams",
+        "url": "https://www.museum.kagoshima-u.ac.jp/publications/pdf_images/PhilippineFG_lowres.pdf"
+      }
+    },
+    {
+      "id": "hairtail",
+      "localName": "Espada",
+      "identification": "Hairtails / cutlassfish • Trichiurus spp.",
+      "habitat": "Swims near the seabed and in the water above it over the continental shelf. Some occur in shallow coastal water over mud.",
+      "source": {
+        "title": "FAO — hairtail habitat",
+        "url": "https://www.fao.org/4/x3478e/x3478e14.pdf"
+      }
+    }
+  ],
+  "sources": {
+    "waters": [
+      {
+        "title": "JICA — Tanza municipal waters, section 7.4.2.4",
+        "url": "https://openjicareport.jica.go.jp/pdf/12260477_01.pdf#page=331"
+      },
+      {
+        "title": "Cavite 2024 — Julugan sanctuary, Table 2.13",
+        "url": "https://cavite.gov.ph/wp-content/uploads/2026/04/CEP_2024.pdf"
+      }
+    ],
+    "catches": [
+      {
+        "title": "Cavite Ecological Profile 2024 — local fisheries",
+        "url": "https://cavite.gov.ph/wp-content/uploads/2026/04/CEP_2024.pdf"
+      },
+      {
+        "title": "Cavite Ecological Profile 2023 — sardines and anchovies",
+        "url": "https://cavite.gov.ph/wp-content/uploads/2026/04/CEP_2023.pdf"
+      }
+    ],
+    "salinas": {
+      "title": "BFAR — sardine names, including Salinas",
+      "url": "https://www.bfar.da.gov.ph/wp-content/uploads/2023/05/2023-04-2ndWeekRetailApril10-14.pdf"
+    }
+  },
+  "sampleHistory": [
+    {
+      "receivedAt": 1792126800000,
+      "latitude": 14.39453,
+      "longitude": 120.82388900000001,
+      "gyroX": "-4.4",
+      "gyroY": "-3.5",
+      "isSample": true,
+      "isDistress": false,
+      "alertType": ""
+    },
+    {
+      "receivedAt": 1792137600000,
+      "latitude": 14.39513,
+      "longitude": 120.82188900000001,
+      "gyroX": "-2.7",
+      "gyroY": "-2.2",
+      "isSample": true,
+      "isDistress": false,
+      "alertType": ""
+    },
+    {
+      "receivedAt": 1792146600000,
+      "latitude": 14.39573,
+      "longitude": 120.819889,
+      "gyroX": "-1.0",
+      "gyroY": "-0.9",
+      "isSample": true,
+      "isDistress": false,
+      "alertType": ""
+    },
+    {
+      "receivedAt": 1792213740000,
+      "latitude": 14.39573,
+      "longitude": 120.82318900000001,
+      "gyroX": "0.7",
+      "gyroY": "0.4",
+      "isSample": true,
+      "isDistress": false,
+      "alertType": ""
+    },
+    {
+      "receivedAt": 1792234020000,
+      "latitude": 14.39633,
+      "longitude": 120.82118900000002,
+      "gyroX": "2.4",
+      "gyroY": "1.7",
+      "isSample": true,
+      "isDistress": false,
+      "alertType": ""
+    },
+    {
+      "receivedAt": 1792300680000,
+      "latitude": 14.39693,
+      "longitude": 120.822489,
+      "gyroX": "4.1",
+      "gyroY": "3.0",
+      "isSample": true,
+      "isDistress": false,
+      "alertType": ""
+    },
+    {
+      "receivedAt": 1792311720000,
+      "latitude": 14.39753,
+      "longitude": 120.82048900000001,
+      "gyroX": "-3.1",
+      "gyroY": "-2.8",
+      "isSample": true,
+      "isDistress": false,
+      "alertType": ""
+    },
+    {
+      "receivedAt": 1792321440000,
+      "latitude": 14.39813,
+      "longitude": 120.818489,
+      "gyroX": "-1.4",
+      "gyroY": "-1.5",
+      "isSample": true,
+      "isDistress": false,
+      "alertType": ""
+    },
+    {
+      "receivedAt": 1792387620000,
+      "latitude": 14.39813,
+      "longitude": 120.82178900000001,
+      "gyroX": "0.3",
+      "gyroY": "-0.2",
+      "isSample": true,
+      "isDistress": false,
+      "alertType": ""
+    },
+    {
+      "receivedAt": 1792408860000,
+      "latitude": 14.39873,
+      "longitude": 120.81978900000001,
+      "gyroX": "2.0",
+      "gyroY": "1.1",
+      "isSample": true,
+      "isDistress": false,
+      "alertType": ""
+    },
+    {
+      "receivedAt": 1792474560000,
+      "latitude": 14.39453,
+      "longitude": 120.82108900000001,
+      "gyroX": "3.7",
+      "gyroY": "2.4",
+      "isSample": true,
+      "isDistress": false,
+      "alertType": ""
+    },
+    {
+      "receivedAt": 1792496280000,
+      "latitude": 14.39513,
+      "longitude": 120.81908900000002,
+      "gyroX": "-3.5",
+      "gyroY": "-3.4",
+      "isSample": true,
+      "isDistress": false,
+      "alertType": ""
+    },
+    {
+      "receivedAt": 1792561500000,
+      "latitude": 14.39573,
+      "longitude": 120.820389,
+      "gyroX": "-1.8",
+      "gyroY": "-2.1",
+      "isSample": true,
+      "isDistress": false,
+      "alertType": ""
+    },
+    {
+      "receivedAt": 1792569600000,
+      "latitude": 14.39633,
+      "longitude": 120.81838900000001,
+      "gyroX": "-0.1",
+      "gyroY": "-0.8",
+      "isSample": true,
+      "isDistress": false,
+      "alertType": ""
+    },
+    {
+      "receivedAt": 1792583700000,
+      "latitude": 14.396930000000001,
+      "longitude": 120.816389,
+      "gyroX": "1.6",
+      "gyroY": "0.5",
+      "isSample": true,
+      "isDistress": false,
+      "alertType": ""
+    },
+    {
+      "receivedAt": 1792645440000,
+      "latitude": 14.39693,
+      "longitude": 120.81968900000001,
+      "gyroX": "3.3",
+      "gyroY": "1.8",
+      "isSample": true,
+      "isDistress": false,
+      "alertType": ""
+    },
+    {
+      "receivedAt": 1792665720000,
+      "latitude": 14.39753,
+      "longitude": 120.81768900000002,
+      "gyroX": "-3.9",
+      "gyroY": "3.1",
+      "isSample": true,
+      "isDistress": false,
+      "alertType": ""
+    },
+    {
+      "receivedAt": 1792732380000,
+      "latitude": 14.39813,
+      "longitude": 120.818989,
+      "gyroX": "-2.2",
+      "gyroY": "-2.7",
+      "isSample": true,
+      "isDistress": false,
+      "alertType": ""
+    },
+    {
+      "receivedAt": 1792753140000,
+      "latitude": 14.39873,
+      "longitude": 120.816989,
+      "gyroX": "-0.5",
+      "gyroY": "-1.4",
+      "isSample": true,
+      "isDistress": false,
+      "alertType": ""
+    },
+    {
+      "receivedAt": 1792819320000,
+      "latitude": 14.39453,
+      "longitude": 120.81828900000001,
+      "gyroX": "1.2",
+      "gyroY": "-0.1",
+      "isSample": true,
+      "isDistress": false,
+      "alertType": ""
+    },
+    {
+      "receivedAt": 1792840560000,
+      "latitude": 14.39513,
+      "longitude": 120.81628900000001,
+      "gyroX": "2.9",
+      "gyroY": "1.2",
+      "isSample": true,
+      "isDistress": false,
+      "alertType": ""
+    },
+    {
+      "receivedAt": 1792906260000,
+      "latitude": 14.39573,
+      "longitude": 120.81758900000001,
+      "gyroX": "-4.3",
+      "gyroY": "2.5",
+      "isSample": true,
+      "isDistress": false,
+      "alertType": ""
+    },
+    {
+      "receivedAt": 1792917840000,
+      "latitude": 14.39633,
+      "longitude": 120.81558900000002,
+      "gyroX": "-2.6",
+      "gyroY": "-3.3",
+      "isSample": true,
+      "isDistress": false,
+      "alertType": ""
+    },
+    {
+      "receivedAt": 1792927980000,
+      "latitude": 14.396930000000001,
+      "longitude": 120.81358900000001,
+      "gyroX": "-0.9",
+      "gyroY": "-2.0",
+      "isSample": true,
+      "isDistress": false,
+      "alertType": ""
+    },
+    {
+      "receivedAt": 1792993200000,
+      "latitude": 14.39693,
+      "longitude": 120.816889,
+      "gyroX": "0.8",
+      "gyroY": "-0.7",
+      "isSample": true,
+      "isDistress": false,
+      "alertType": ""
+    },
+    {
+      "receivedAt": 1793015400000,
+      "latitude": 14.39753,
+      "longitude": 120.81488900000001,
+      "gyroX": "2.5",
+      "gyroY": "0.6",
+      "isSample": true,
+      "isDistress": false,
+      "alertType": ""
+    },
+    {
+      "receivedAt": 1793080140000,
+      "latitude": 14.39813,
+      "longitude": 120.81618900000001,
+      "gyroX": "4.2",
+      "gyroY": "1.9",
+      "isSample": true,
+      "isDistress": false,
+      "alertType": ""
+    },
+    {
+      "receivedAt": 1793097420000,
+      "latitude": 14.39873,
+      "longitude": 120.81418900000001,
+      "gyroX": "-3.0",
+      "gyroY": "3.2",
+      "isSample": true,
+      "isDistress": false,
+      "alertType": ""
+    },
+    {
+      "receivedAt": 1793164080000,
+      "latitude": 14.39453,
+      "longitude": 120.81548900000001,
+      "gyroX": "-1.3",
+      "gyroY": "-2.6",
+      "isSample": true,
+      "isDistress": false,
+      "alertType": ""
+    },
+    {
+      "receivedAt": 1793184840000,
+      "latitude": 14.39513,
+      "longitude": 120.81348900000002,
+      "gyroX": "0.4",
+      "gyroY": "-1.3",
+      "isSample": true,
+      "isDistress": false,
+      "alertType": ""
+    },
+    {
+      "receivedAt": 1793251020000,
+      "latitude": 14.39573,
+      "longitude": 120.814789,
+      "gyroX": "2.1",
+      "gyroY": "0.0",
+      "isSample": true,
+      "isDistress": false,
+      "alertType": ""
+    },
+    {
+      "receivedAt": 1793262780000,
+      "latitude": 14.39633,
+      "longitude": 120.81278900000001,
+      "gyroX": "3.8",
+      "gyroY": "1.3",
+      "isSample": true,
+      "isDistress": false,
+      "alertType": ""
+    },
+    {
+      "receivedAt": 1793275200000,
+      "latitude": 14.396930000000001,
+      "longitude": 120.810789,
+      "gyroX": "-3.4",
+      "gyroY": "2.6",
+      "isSample": true,
+      "isDistress": false,
+      "alertType": ""
+    }
+  ]
+}

@@ -1,2 +1,39 @@
 {% extends 'aquawatch_app/base.html' %}
-{% block content %}<div class="page-header-row"><div><h1>{{ device.name }}</h1><p class="muted">Tracking {{ device.serial }}</p></div><a class="button button-secondary" href="{% url 'devices' %}">Back to devices</a></div><div class="split-layout"><section class="page-card">{% if device.photo %}<img class="device-photo" src="{{ device.photo.url }}" alt="{{ device.name }}">{% endif %}<dl class="detail-list"><dt>Status</dt><dd>{{ device.status }}</dd><dt>Type</dt><dd>{{ device.device_type }}</dd><dt>Modules</dt><dd><span class="capability-list detail-capabilities">{% for capability in device.capability_labels %}<span class="capability-chip">{{ capability }}</span>{% empty %}<span class="muted">No modules selected</span>{% endfor %}</span></dd><dt>Owner</dt><dd>{{ device.owner|default:'--' }}</dd><dt>Driver / operator</dt><dd>{{ device.driver|default:'--' }}</dd><dt>Vessel</dt><dd>{{ device.vessel|default:'--' }}</dd><dt>Registration</dt><dd>{{ device.registration|default:'--' }}</dd><dt>IMEI</dt><dd>{{ device.imei|default:'--' }}</dd><dt>SIM</dt><dd>{{ device.sim|default:'--' }}</dd><dt>Emergency contact</dt><dd>{{ device.contact|default:'--' }}</dd></dl></section><section class="page-card"><h2>Last known position</h2><div class="tracking-placeholder"><span class="tracking-dot"></span><strong>{{ device.last_location|default:'Awaiting first GPS update' }}</strong><p>{{ device.last_updated|default:'Just registered' }}</p></div><a class="button" href="{% url 'map' %}">Open monitoring map</a></section></div>{% endblock %}
+{% load static %}
+{% block content %}
+<div class="page-header-row"><div><h1>{{ device.name }}</h1><p class="muted">Tracking {{ device.serial }}</p></div><a class="button button-secondary" href="{% url 'devices' %}">Back to devices</a></div>
+<div class="split-layout">
+  <section class="page-card">
+    {% if device.photo %}<img class="device-photo" src="{{ device.photo.url }}" alt="{{ device.name }}">{% endif %}
+    <dl class="detail-list">
+      <dt>Status</dt><dd>{{ device.status }}</dd><dt>Type</dt><dd>{{ device.device_type }}</dd>
+      <dt>Modules</dt><dd><span class="capability-list detail-capabilities">{% for capability in device.capability_labels %}<span class="capability-chip">{{ capability }}</span>{% empty %}<span class="muted">No modules selected</span>{% endfor %}</span></dd>
+      <dt>Owner</dt><dd>{{ device.owner|default:'--' }}</dd><dt>Driver / operator</dt><dd>{{ device.driver|default:'--' }}</dd><dt>Vessel</dt><dd>{{ device.vessel|default:'--' }}</dd><dt>Registration</dt><dd>{{ device.registration|default:'--' }}</dd><dt>IMEI</dt><dd>{{ device.imei|default:'--' }}</dd><dt>SIM</dt><dd>{{ device.sim|default:'--' }}</dd><dt>Emergency contact</dt><dd>{{ device.contact|default:'--' }}</dd>
+    </dl>
+  </section>
+  <section class="page-card"><h2>Last known position</h2><div class="tracking-placeholder"><span class="tracking-dot"></span><strong>{{ device.last_location|default:'Awaiting first GPS update' }}</strong><p>{{ device.last_updated|default:'Just registered' }}</p></div><a class="button" href="{% url 'map' %}">Open monitoring map</a></section>
+</div>
+<section class="page-card" aria-labelledby="status-history-title">
+  <h2 id="status-history-title">Status history</h2>
+  {% if sample_count %}<p class="sample-history-notice"><strong>{{ sample_count }} labeled sample logs</strong> · October 16–29, 2026 · Manila time<br>Illustrative positions and readings. Samples do not change live status, alerts, or real sensor records.</p>{% endif %}
+  <p class="muted">Dates and times below use Asia/Manila. Orange paths are samples; teal paths are device logs.</p>
+  {% if history %}
+  <div class="history-filters">
+    <label>From date<input type="date" id="history-from"></label>
+    <label>To date<input type="date" id="history-to"></label>
+    <label>Source<select id="history-source"><option value="all">All entries</option><option value="sample">Samples</option><option value="device">Device logs</option></select></label>
+    <button class="button button-secondary" id="history-reset" type="button">Reset filters</button>
+  </div>
+  <p id="history-count" role="status">{{ history|length }} entries</p>
+  <label>Selected status<select id="history-entry" class="full-width">{% for entry in history %}<option value="{{ entry.id }}">{{ entry.receivedLabel }} · {% if entry.isSample %}Sample{% else %}Device log{% endif %}</option>{% endfor %}</select></label>
+  <div id="status-history-map" class="status-history-map" aria-label="Selected device status location"></div>
+  <p class="muted" id="history-map-feedback" role="status"></p>
+  <div class="history-table-scroll"><table class="history-table"><caption>Status telemetry · Manila time</caption><thead><tr><th scope="col">Date / time</th><th scope="col">Source</th><th scope="col">Coordinates</th><th scope="col">Gyro X</th><th scope="col">Gyro Y</th><th scope="col">Alert</th></tr></thead><tbody id="history-rows">
+    {% for entry in history %}<tr data-entry-id="{{ entry.id }}"><td>{{ entry.receivedLabel }}</td><td><span class="{% if entry.isSample %}sample-badge{% else %}device-log-badge{% endif %}">{% if entry.isSample %}Sample{% else %}Device log{% endif %}</span></td><td>{{ entry.latitude|floatformat:6 }}, {{ entry.longitude|floatformat:6 }}</td><td>{{ entry.gyroX|default:'--' }}</td><td>{{ entry.gyroY|default:'--' }}</td><td>{{ entry.alertType|default:'--' }}</td></tr>{% endfor %}
+  </tbody></table></div>
+  {% else %}<p class="muted">No status history received for this device yet.</p>{% endif %}
+</section>
+{{ history|json_script:'status-history-data' }}
+{{ history_map_config|json_script:'history-map-config' }}
+{% endblock %}
+{% block scripts %}<script type="module" src="{% static 'aquawatch_app/device-history.js' %}"></script>{% endblock %}

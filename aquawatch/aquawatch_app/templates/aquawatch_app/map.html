@@ -1,14 +1,16 @@
 {% extends 'aquawatch_app/base.html' %}
+{% load static %}
 {% block content %}
 <section class="mobile-map-shell" aria-label="AquaWatch monitoring map">
   <div id="map" class="mobile-map-canvas"></div>
   <div class="map-top-controls">
     <a class="button map-report-button" href="{% url 'reports' %}">Submit incident report</a>
-    <button class="button map-fishing-zone-button" id="show-fishing-zone" type="button">Show Fishing Zone</button>
+    <button class="button map-fishing-zone-button" id="show-fishing-zone" type="button">Show habitat areas</button>
+    <button class="button button-secondary" id="show-monitoring-area" type="button">Monitoring area</button>
     {% if profile.share_location %}<button class="button map-location-button" id="show-my-location" type="button">Show My Location</button>{% else %}<a class="button button-secondary map-location-button" href="{% url 'settings' %}">Enable Location</a>{% endif %}
     <span class="map-location-status" id="location-status">Tap Show My Location to center the map</span>
   </div>
-  <div class="map-zone-legend"><span aria-hidden="true"></span>Amaya, Tanza Municipal Fishing Zone · 500 m radius</div>
+  <div class="map-zone-legend"><span aria-hidden="true"></span>11 draft habitat areas · Tanza coastal waters</div>
   <article class="mobile-map-details" id="monitoring-details" hidden>
     <button class="map-details-close" id="close-details" type="button" aria-label="Close monitoring details">&times;</button>
     <div class="map-details-copy"><h1>{{ area.label }}</h1><p>Monitoring area details</p></div>
@@ -18,53 +20,26 @@
     <div class="map-details-footer"><span>Use Settings &gt; Monitoring Location to move this pin.</span><a href="{% url 'location' %}">Edit location</a></div>
   </article>
 </section>
-{% if google_maps_key %}
-<script async defer src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_key }}&callback=initMap"></script>
-<script>
-function initMap() {
-  const monitoringCenter = {lat:Number('{{ area.latitude }}'),lng:Number('{{ area.longitude }}')};
-  const details = document.getElementById('monitoring-details');
-  const status = document.getElementById('location-status');
-  const darkStyle = [
-    {elementType:'geometry',stylers:[{color:'#102338'}]},{elementType:'labels.text.fill',stylers:[{color:'#d7eef6'}]},
-    {elementType:'labels.text.stroke',stylers:[{color:'#07111f'}]},{featureType:'administrative',elementType:'geometry.stroke',stylers:[{color:'#2b5365'}]},
-    {featureType:'landscape',elementType:'geometry',stylers:[{color:'#12283b'}]},{featureType:'poi',stylers:[{visibility:'off'}]},
-    {featureType:'road',elementType:'geometry',stylers:[{color:'#1c3b52'}]},{featureType:'road',elementType:'labels.text.fill',stylers:[{color:'#9ec4d1'}]},
-    {featureType:'transit',stylers:[{visibility:'off'}]},{featureType:'water',elementType:'geometry',stylers:[{color:'#061a2c'}]},
-    {featureType:'water',elementType:'labels.text.fill',stylers:[{color:'#77a9ba'}]}
-  ];
-  const map = new google.maps.Map(document.getElementById('map'),{center:monitoringCenter,zoom:10,disableDefaultUI:true,zoomControl:true,gestureHandling:'greedy',styles:{% if aqua_dark_mode %}darkStyle{% else %}null{% endif %}});
-  const radius = new google.maps.Circle({map,center:monitoringCenter,radius:20000,fillColor:'#00A8B5',fillOpacity:.14,strokeColor:'#00A8B5',strokeOpacity:.8,strokeWeight:3});
-  const marker = new google.maps.Marker({map,position:monitoringCenter,title:'{{ area.label|escapejs }}',animation:google.maps.Animation.DROP});
-  const fishingZoneCenter = {lat:14.394530,lng:120.825889};
-  const fishingZone = new google.maps.Circle({map,center:fishingZoneCenter,radius:500,clickable:true,fillColor:'#ff6b35',fillOpacity:.22,strokeColor:'#ff8a57',strokeOpacity:.95,strokeWeight:3});
-  const fishingZoneMarker = new google.maps.Marker({map,position:fishingZoneCenter,title:'Amaya, Tanza Municipal Fishing Zone',icon:{path:google.maps.SymbolPath.CIRCLE,scale:9,fillColor:'#ff6b35',fillOpacity:1,strokeColor:'#ffffff',strokeWeight:2}});
-  const fishingZoneInfo = new google.maps.InfoWindow({content:'<strong>Amaya, Tanza Municipal Fishing Zone</strong><br>500 m radius<br>14.394530, 120.825889'});
-  const mapBounds = radius.getBounds();
-  mapBounds.extend(fishingZone.getBounds().getNorthEast());
-  mapBounds.extend(fishingZone.getBounds().getSouthWest());
-  map.fitBounds(mapBounds,64);
-  marker.addListener('click',()=>{details.hidden=false;map.fitBounds(mapBounds,64);});
-  fishingZone.addListener('click',()=>fishingZoneInfo.open({map,anchor:fishingZoneMarker}));
-  fishingZoneMarker.addListener('click',()=>fishingZoneInfo.open({map,anchor:fishingZoneMarker}));
-  document.getElementById('show-fishing-zone').addEventListener('click',()=>{details.hidden=true;map.panTo(fishingZoneCenter);map.setZoom(14);});
-  map.addListener('click',()=>{details.hidden=true;});
-  document.getElementById('close-details').addEventListener('click',()=>{details.hidden=true;});
-  {% if profile.share_location %}
-  let userMarker=null;
-  document.getElementById('show-my-location').addEventListener('click',()=>{
-    details.hidden=true;
-    if(!navigator.geolocation){status.textContent='Location is not supported by this browser.';return;}
-    status.textContent='Finding current location...';
-    navigator.geolocation.getCurrentPosition(position=>{
-      const current={lat:position.coords.latitude,lng:position.coords.longitude};
-      if(userMarker)userMarker.setMap(null);
-      userMarker=new google.maps.Marker({map,position:current,title:'My location',icon:{path:google.maps.SymbolPath.CIRCLE,scale:9,fillColor:'#4285F4',fillOpacity:1,strokeColor:'#ffffff',strokeWeight:3}});
-      map.panTo(current);map.setZoom(15);status.textContent=`${current.lat.toFixed(5)}, ${current.lng.toFixed(5)}`;
-    },error=>{status.textContent=error.code===1?'Location permission denied':'Location unavailable. Turn on GPS and try again.';},{enableHighAccuracy:true,timeout:10000,maximumAge:30000});
-  });
-  {% endif %}
-}
-</script>
-{% else %}<div class="warning-card">Google Maps API key is missing. Add it in the Django settings to display the monitoring map.</div>{% endif %}
+<p id="map-feedback" class="muted" role="status" hidden></p>
+<section class="page-card habitat-catalog" aria-labelledby="habitat-catalog-title">
+  <h1 id="habitat-catalog-title">Amaya habitat areas</h1>
+  <p class="muted">Choose a fish marker, polygon, or area below for fish habitat and trip timing. These are illustrative outlines; municipal limits and fish presence are unverified.</p>
+  <div class="habitat-area-list" id="habitat-area-list">
+    {% for zone in fishing_data.zones %}<button type="button" class="button button-secondary habitat-area-choice" data-zone-id="{{ zone.id }}" aria-pressed="false">{{ zone.title }}</button>{% endfor %}
+  </div>
+</section>
+<section class="page-card habitat-panel" id="habitat-panel" aria-labelledby="habitat-title" hidden>
+  <div class="page-header-row"><div><p class="eyebrow">Tanza coastal waters · Draft habitat outline</p><h2 id="habitat-title"></h2></div><button class="button button-secondary" id="close-habitat" type="button">Close area details</button></div>
+  <div class="habitat-tabs" role="tablist" aria-label="Area details">
+    <button id="habitat-tab" role="tab" aria-selected="true" aria-controls="habitat-content" class="button" type="button">Fish & habitat</button>
+    <button id="trip-tab" role="tab" aria-selected="false" aria-controls="trip-content" class="button button-secondary" type="button">Fishing efficiency & tides</button>
+  </div>
+  <div id="habitat-content" role="tabpanel" aria-labelledby="habitat-tab"></div>
+  <div id="trip-content" role="tabpanel" aria-labelledby="trip-tab" hidden></div>
+</section>
+{{ fishing_data|json_script:'fishing-data' }}
+{{ map_config|json_script:'map-config' }}
+{% endblock %}
+{% block scripts %}
+<script type="module" src="{% static 'aquawatch_app/fishing-map.js' %}"></script>
 {% endblock %}

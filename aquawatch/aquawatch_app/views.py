@@ -27,6 +27,7 @@ from .forms import (
 )
 from .models import Alert, Device, MonitoringArea, Report, UserProfile
 from .accounts import EMAIL_ALREADY_REGISTERED, email_is_registered
+from .fishing import device_status_history, fishing_catalog
 
 
 def get_or_create_profile(user: User) -> UserProfile:
@@ -297,7 +298,11 @@ def add_device(request):
 @login_required
 def device_detail(request, device_id):
     device = get_object_or_404(Device, id=device_id, user=request.user)
-    return render(request, 'aquawatch_app/device_detail.html', {'device': device})
+    history = device_status_history(device)
+    return render(request, 'aquawatch_app/device_detail.html', {
+        'device': device, 'history': history, 'sample_count': sum(row['isSample'] for row in history),
+        'history_map_config': {'key': settings.GOOGLE_MAPS_API_KEY, 'dark': get_or_create_profile(request.user).dark_mode},
+    })
 
 
 @login_required
@@ -395,4 +400,7 @@ def map_view(request):
         'profile': profile,
         'device_count': Device.objects.filter(user=request.user, status__iexact='Active').count(),
         'google_maps_key': settings.GOOGLE_MAPS_API_KEY,
+        'fishing_data': fishing_catalog(),
+        'map_config': {'key': settings.GOOGLE_MAPS_API_KEY, 'dark': profile.dark_mode,
+                       'area': {'lat': area.latitude, 'lng': area.longitude, 'label': area.label}},
     })
