@@ -879,3 +879,19 @@ body.theme-light .map-unavailable { color:#e6f0ff; }
   .login-mark { display:block; flex:0 0 auto; }
   .login-mark img { width:46px; height:46px; border-radius:12px; object-fit:cover; }
 }
+
+.month-map-control { display:flex; align-items:center; gap:16px; }
+.month-map-control > div { text-align:center; }
+.zone-fields { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:14px; }
+.zone-fields label, #zone-form > label { display:grid; gap:6px; margin-bottom:12px; }
+.zone-edit-map { height:380px; width:100%; border-radius:12px; margin:16px 0; }
+#zone-boundary { width:100%; font-family:monospace; }
+#zone-save-status { color:#df6346; }
+
+.zone-center-marker span { display:block; width:20px; height:20px; border:3px solid white; background:#2563eb; border-radius:50%; box-shadow:0 1px 5px #123; }
+
+#zone-form input:not([type=checkbox]), #zone-form textarea { width:100%; min-width:0; min-height:44px; padding:10px 12px; border:1px solid rgba(163,190,213,.35); border-radius:10px; background:#16253d; color:#edf4ff; font:inherit; }
+#zone-form textarea { font-family:monospace; }
+#zone-form input[type=checkbox] { width:20px; height:20px; }
+body.theme-light #zone-form input:not([type=checkbox]), body.theme-light #zone-form textarea { background:#fff; color:#10253b; border-color:#bfd0dd; }
+.zone-vertex-marker span { display:flex; justify-content:center; align-items:center; width:28px; height:28px; border:2px solid white; border-radius:50%; background:#e96831; color:white; font-weight:700; box-shadow:0 1px 4px #123; }

@@ -10,7 +10,11 @@
     {% if profile.share_location %}<button class="button map-location-button" id="show-my-location" type="button">Show My Location</button>{% else %}<a class="button button-secondary map-location-button" href="{% url 'settings' %}">Enable Location</a>{% endif %}
     <span class="map-location-status" id="location-status">Tap Show My Location to center the map</span>
   </div>
-  <div class="map-zone-legend"><span aria-hidden="true"></span>11 draft habitat areas · Tanza coastal waters</div>
+  <div class="map-zone-legend month-map-control">
+    {% if previous_month %}<a class="button button-secondary" aria-label="Previous month" href="?month={{ previous_month }}">−</a>{% endif %}
+    <div><strong>{{ month_label }}</strong><br>{{ fishing_data.zones|length }} fishing zones</div>
+    {% if next_month %}<a class="button button-secondary" aria-label="Next month" href="?month={{ next_month }}">+</a>{% endif %}
+  </div>
   <article class="mobile-map-details" id="monitoring-details" hidden>
     <button class="map-details-close" id="close-details" type="button" aria-label="Close monitoring details">&times;</button>
     <div class="map-details-copy"><h1>{{ area.label }}</h1><p>Monitoring area details</p></div>
@@ -22,7 +26,7 @@
 </section>
 <p id="map-feedback" class="muted" role="status" hidden></p>
 <section class="page-card habitat-catalog" aria-labelledby="habitat-catalog-title">
-  <h1 id="habitat-catalog-title">Amaya habitat areas</h1>
+  <div class="page-header-row"><h1 id="habitat-catalog-title">Amaya fishing zones</h1>{% if user.is_staff or user.is_superuser %}<button type="button" class="button" id="new-fishing-zone">Add fishing zone</button>{% endif %}</div>
   <p class="muted">Choose a fish marker, polygon, or area below for fish habitat and trip timing. These are illustrative outlines; municipal limits and fish presence are unverified.</p>
   <div class="habitat-area-list" id="habitat-area-list">
     {% for zone in fishing_data.zones %}<button type="button" class="button button-secondary habitat-area-choice" data-zone-id="{{ zone.id }}" aria-pressed="false">{{ zone.title }}</button>{% endfor %}
@@ -37,9 +41,25 @@
   <div id="habitat-content" role="tabpanel" aria-labelledby="habitat-tab"></div>
   <div id="trip-content" role="tabpanel" aria-labelledby="trip-tab" hidden></div>
 </section>
+{% if user.is_staff or user.is_superuser %}
+<section class="page-card" id="zone-editor" hidden aria-labelledby="zone-editor-title">
+  <div class="page-header-row"><h2 id="zone-editor-title">Fishing zone editor</h2><button type="button" class="button button-secondary" id="close-zone-editor">Cancel</button></div>
+  <p>Click the editor map to add boundary points. Drag numbered points to reshape the zone. Drag the blue pin to move its center.</p>
+  <form id="zone-form">{% csrf_token %}
+    <div class="zone-fields"><label>Zone name<input id="zone-name" maxlength="128" required></label><label>Month<input id="zone-month" type="month" min="2000-01" max="2100-12" value="{{ zone_month }}" required></label>
+    <label>Center latitude<input id="zone-lat" type="number" step="any" required></label><label>Center longitude<input id="zone-lng" type="number" step="any" required></label></div>
+    <div id="zone-edit-map" class="zone-edit-map"></div>
+    <div class="form-actions"><button type="button" class="button button-secondary" id="clear-zone-points">Clear boundary</button><label>Resize (%)<input id="zone-scale" type="number" min="10" max="300" value="100"></label><button type="button" class="button button-secondary" id="resize-zone">Apply size</button></div>
+    <label>Boundary vertices (JSON, in order)<textarea id="zone-boundary" rows="7" required></textarea></label>
+    <p id="zone-area">Area: —</p><label><input type="checkbox" id="zone-active" checked> Published on user maps</label>
+    <p id="zone-save-status" role="status"></p><button type="submit" class="button" id="save-zone">Save fishing zone</button>
+  </form>
+</section>
+{% endif %}
 {{ fishing_data|json_script:'fishing-data' }}
 {{ map_config|json_script:'map-config' }}
 {% endblock %}
 {% block scripts %}
 <script type="module" src="{% static 'aquawatch_app/fishing-map.js' %}"></script>
+{% if user.is_staff or user.is_superuser %}<script type="module" src="{% static 'aquawatch_app/zone-editor.js' %}"></script>{% endif %}
 {% endblock %}

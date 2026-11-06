@@ -15,10 +15,11 @@
 </div>
 <section class="page-card" aria-labelledby="status-history-title">
   <h2 id="status-history-title">Status history</h2>
-  {% if sample_count %}<p class="sample-history-notice"><strong>{{ sample_count }} labeled sample logs</strong> · October 16–29, 2026 · Manila time<br>Illustrative positions and readings. Samples do not change live status, alerts, or real sensor records.</p>{% endif %}
+  {% if sample_count %}<p class="sample-history-notice"><strong>{{ sample_count }} labeled sample logs</strong> · October 1–28, 2026 (excluding October 15–17) · Manila time<br>Departures and returns use the Amaya shoreline near Amaya 5, Tanza. Illustrative positions and readings. Samples do not change live status, alerts, or real sensor records.</p>{% endif %}
   <p class="muted">Dates and times below use Asia/Manila. Orange paths are samples; teal paths are device logs.</p>
   {% if history %}
   <div class="history-filters">
+    <label>History date<select id="history-date"></select></label>
     <label>From date<input type="date" id="history-from"></label>
     <label>To date<input type="date" id="history-to"></label>
     <label>Source<select id="history-source"><option value="all">All entries</option><option value="sample">Samples</option><option value="device">Device logs</option></select></label>
@@ -28,8 +29,8 @@
   <label>Selected status<select id="history-entry" class="full-width">{% for entry in history %}<option value="{{ entry.id }}">{{ entry.receivedLabel }} · {% if entry.isSample %}Sample{% else %}Device log{% endif %}</option>{% endfor %}</select></label>
   <div id="status-history-map" class="status-history-map" aria-label="Selected device status location"></div>
   <p class="muted" id="history-map-feedback" role="status"></p>
-  <div class="history-table-scroll"><table class="history-table"><caption>Status telemetry · Manila time</caption><thead><tr><th scope="col">Date / time</th><th scope="col">Source</th><th scope="col">Coordinates</th><th scope="col">Gyro X</th><th scope="col">Gyro Y</th><th scope="col">Alert</th></tr></thead><tbody id="history-rows">
-    {% for entry in history %}<tr data-entry-id="{{ entry.id }}"><td>{{ entry.receivedLabel }}</td><td><span class="{% if entry.isSample %}sample-badge{% else %}device-log-badge{% endif %}">{% if entry.isSample %}Sample{% else %}Device log{% endif %}</span></td><td>{{ entry.latitude|floatformat:6 }}, {{ entry.longitude|floatformat:6 }}</td><td>{{ entry.gyroX|default:'--' }}</td><td>{{ entry.gyroY|default:'--' }}</td><td>{{ entry.alertType|default:'--' }}</td></tr>{% endfor %}
+  <div class="history-table-scroll"><table class="history-table"><caption>Status telemetry · Manila time</caption><thead><tr><th scope="col">Date / time</th><th scope="col">Source</th><th scope="col">Coordinates</th><th scope="col">Gyro X</th><th scope="col">Gyro Y</th><th scope="col">Activity / alert</th></tr></thead><tbody id="history-rows">
+    {% for entry in history %}<tr data-entry-id="{{ entry.id }}"><td>{{ entry.receivedLabel }}</td><td><span class="{% if entry.isSample %}sample-badge{% else %}device-log-badge{% endif %}">{% if entry.isSample %}Sample{% else %}Device log{% endif %}</span></td><td>{{ entry.latitude|floatformat:6 }}, {{ entry.longitude|floatformat:6 }}</td><td>{{ entry.gyroX|default:'--' }}</td><td>{{ entry.gyroY|default:'--' }}</td><td>{{ entry.sampleActivity|default:entry.alertType|default:'--' }}</td></tr>{% endfor %}
   </tbody></table></div>
   {% else %}<p class="muted">No status history received for this device yet.</p>{% endif %}
 </section>

@@ -6,19 +6,21 @@ import {HOUR, dateKey, dayStart, candidateWindow, tideTurns, parseForecast} from
 const time=(hour,minute=0)=>Date.parse(`2026-11-06T${String(hour).padStart(2,'0')}:${String(minute).padStart(2,'0')}:00+08:00`);
 const fixture=(levels=Array.from({length:24},(_,i)=>i/10))=>({hours:levels.map((level,i)=>({time:time(i),seaLevel:level,waveHeight:.3,windSpeed:2,weatherCode:0})),daylight:[{sunrise:time(6),sunset:time(18)}],fetchedAt:time(6)});
 
-test('33 samples cover October 16–29 with 2 or 3 afternoon logs per day',()=>{
+test('monthly zones and 175 labeled afternoon samples match the updated catalog',()=>{
   const data=JSON.parse(readFileSync(new URL('../aquawatch/aquawatch_app/static/aquawatch_app/fishing-data.json',import.meta.url),'utf8'));
-  assert.equal(data.zones.length,11);assert.equal(data.fish.length,6);assert.equal(data.sampleHistory.length,33);
+  assert.equal(data.zones.length,10);assert.equal(data.fish.length,6);assert.equal(data.sampleHistory.length,175);
+  assert.deepEqual(data.months.map(month=>month.month),Array.from({length:12},(_,i)=>`2026-${String(i+1).padStart(2,'0')}`));
+  assert.deepEqual(data.months.map(month=>month.zones.length),[14,11,18,13,20,16,12,17,15,16,10,13]);
   const counts=new Map();
   for(const row of data.sampleHistory) {
     const key=dateKey(row.receivedAt);counts.set(key,(counts.get(key)||0)+1);
     const local=new Date(row.receivedAt+8*HOUR),minutes=local.getUTCHours()*60+local.getUTCMinutes();
-    assert.ok(minutes>720 && minutes<=1200);assert.equal(row.isSample,true);assert.equal(row.alertType,'');
+    assert.ok(minutes>720 && minutes<=1200);assert.equal(row.isSample,true);assert.equal(row.isDistress,false);assert.equal(row.alertType,'');
   }
-  assert.deepEqual([...counts.keys()],Array.from({length:14},(_,i)=>`2026-10-${i+16}`));
-  assert.ok([...counts.values()].every(n=>n===2||n===3));
-  assert.equal(new Set(data.sampleHistory.map(row=>row.receivedAt)).size,33);
-  for(const zone of data.zones) {assert.ok(zone.boundary.length>=9);assert.equal(zone.proposed,true);}
+  assert.deepEqual([...counts.keys()],Array.from({length:28},(_,i)=>i+1).filter(day=>day<15||day>17).map(day=>`2026-10-${String(day).padStart(2,'0')}`));
+  assert.ok([...counts.values()].every(n=>n===7));
+  assert.equal(new Set(data.sampleHistory.map(row=>row.receivedAt)).size,175);
+  for(const zone of data.months.flatMap(month=>month.zones)) {assert.ok(zone.boundary.length>=3&&zone.boundary.length<=100);assert.equal(zone.proposed,true);}
 });
 test('departure stays in daylight, is future, and accounts for travel',()=>{
   assert.deepEqual(candidateWindow(fixture(),dateKey(time(6)),time(6),30,'rising'),{departure:time(6,30),arrival:time(7),end:time(9),maxWind:2,maxWaves:.3});

@@ -20,7 +20,8 @@ from django.http import JsonResponse
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import Alert, Device, DeviceReading, MobileAuthWindow, MobileToken, MonitoringArea, Report, SignupChallenge, SyncReceipt, UserProfile
+from .models import Alert, AlertDismissal, Device, DeviceReading, MobileAuthWindow, MobileToken, MonitoringArea, Report, SignupChallenge, SyncReceipt, UserProfile
+from .alert_services import active_alerts, serialize_alert, record_device_alert, dismiss_alert
 from .accounts import EMAIL_ALREADY_REGISTERED, email_is_registered, normalize_email
 
 
@@ -74,7 +75,7 @@ def api(methods, protected=True):
     def decorate(view):
         @csrf_exempt
         @wraps(view)
-        def wrapper(request):
+        def wrapper(request, *args, **kwargs):
             try:
                 if request.method not in methods:
                     raise ApiError('Method not allowed.', 405)
@@ -101,7 +102,7 @@ def api(methods, protected=True):
                         raise ApiError('Invalid JSON.')
                     if not isinstance(data, dict):
                         raise ApiError('Send a JSON object.')
-                response = JsonResponse(view(request, data))
+                response = JsonResponse(view(request, data, *args, **kwargs))
             except ApiError as error:
                 body = {'error': error.message}
                 if error.event_id:
@@ -268,15 +269,15 @@ def snapshot(user):
         })
     return {
         'user': {'id': user.pk, 'username': user.username, 'email': user.email, 'first_name': user.first_name,
-                 'last_name': user.last_name, 'phone': profile.phone, 'role': profile.role, 'station': profile.station},
+                 'last_name': user.last_name, 'phone': profile.phone, 'role': profile.role, 'station': profile.station,
+                 'is_admin': user.is_staff or user.is_superuser},
         'area': {'latitude': area.latitude, 'longitude': area.longitude, 'label': area.label},
         'devices': devices,
         'reports': [{'id': report.mobile_id or f'web-{report.pk}', 'type': report.type, 'location': report.location,
                      'severity': report.severity, 'time': report.time, 'description': report.description}
                     for report in Report.objects.filter(user=user).order_by('id')],
-        'alerts': [{'id': alert.source_id or f'web-{alert.pk}', 'type': alert.type, 'location': alert.location, 'time': alert.time,
-                    'severity': alert.severity, 'description': alert.description}
-                   for alert in Alert.objects.filter(user=user).order_by('-id')],
+        'alerts': [serialize_alert(alert) for alert in active_alerts(user).select_related('device').order_by('-id')],
+        'dismissed_alert_ids': list(AlertDismissal.objects.filter(user=user).values_list('alert_key',flat=True)),
     }
 
 
@@ -331,12 +332,34 @@ def apply_event(user, kind, data):
             device.last_updated = received.strftime('%Y-%m-%d %H:%M:%S UTC')
             device.status = 'Active' if received >= timezone.now() - timedelta(minutes=10) else 'Offline'
             device.save(update_fields=['last_status_at', 'last_location', 'last_updated', 'status'])
-        if reading.alert_type:
-            Alert.objects.create(user=user, type=reading.alert_type, location=f'{reading.latitude}, {reading.longitude}',
-                                 source_id=f'{data["device_id"]}-{data["received_at"]}',
-                                 time=received.strftime('%Y-%m-%d %H:%M:%S UTC'),
-                                 severity='Critical' if reading.is_distress else 'High',
-                                 description=f'{device.name} reported {reading.alert_type}.')
+        if reading.alert_type or reading.is_distress:
+            record_device_alert(user,device,f'{data["device_id"]}-{data["received_at"]}',received,
+                reading.latitude,reading.longitude,reading.alert_type or 'Distress',reading.is_distress)
+    elif kind == 'alert.create':
+        device_id=text(data,'device_id',required=True)
+        device=find_device(user,device_id)
+        received=timestamp(data,'received_at')
+        record_device_alert(user,device,f'{device_id}-{data["received_at"]}',received,
+            coordinate(data,'latitude',90),coordinate(data,'longitude',180),
+            text(data,'alert_type',required=True),boolean(data,'is_distress'))
+    elif kind == 'alert.dismiss':
+        key=text(data,'alert_id',256,required=True)
+        if AlertDismissal.objects.filter(user=user,alert_key=key).exists(): return
+        item=Alert.objects.filter(user=user,source_id=key).first()
+        if item is None and key.startswith('web-') and key[4:].isdigit():
+            item=Alert.objects.filter(user=user,pk=int(key[4:])).first()
+        if item is not None:
+            dismiss_alert(item)
+        else:
+            # A phone may dismiss while its reading is still queued/offline.
+            # Validate device ownership and timestamp, then retain a tombstone
+            # even if the matching alert is uploaded in a later batch.
+            device_id,separator,received=key.rpartition('-')
+            if not separator or not received.isascii() or not received.isdigit():
+                raise ApiError('Alert not found.',404)
+            find_device(user,device_id)
+            timestamp({'received_at':int(received)},'received_at')
+            AlertDismissal.objects.get_or_create(user=user,alert_key=key)
     elif kind == 'profile.update':
         profile, _ = UserProfile.objects.get_or_create(user=user)
         for key in ('phone', 'role', 'station'):

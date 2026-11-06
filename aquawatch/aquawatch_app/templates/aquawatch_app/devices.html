@@ -4,7 +4,7 @@
     <div class="page-header-row"><div><h1>Devices</h1><p class="muted">Track registered coastal monitoring equipment.</p></div><a class="button" href="{% url 'add_device' %}">Add device</a></div>
     {% if devices %}<ul class="item-list">{% for device in devices %}<li>
         <div class="item-heading"><strong>{{ device.name }}</strong><span class="status-pill">{{ device.status }}</span></div>
-        <div>{{ device.device_type }} &middot; {{ device.serial }}{% if device.vessel %} &middot; {{ device.vessel }}{% endif %}</div>
+        {% if user.is_staff or user.is_superuser %}<p>Account: {{ device.user.username }} ({{ device.user.email }})</p>{% endif %}<div>{{ device.device_type }} &middot; {{ device.serial }}{% if device.vessel %} &middot; {{ device.vessel }}{% endif %}</div>
         <div class="capability-list" aria-label="Device capabilities">
             {% for capability in device.capability_labels %}<span class="capability-chip">{{ capability }}</span>{% empty %}<span class="muted">No modules selected</span>{% endfor %}
         </div>

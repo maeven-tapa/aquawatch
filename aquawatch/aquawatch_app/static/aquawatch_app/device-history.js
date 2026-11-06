@@ -5,6 +5,9 @@ const selector=document.getElementById('history-entry');
 if(selector) {
   const from=document.getElementById('history-from'), to=document.getElementById('history-to'), source=document.getElementById('history-source');
   const feedback=document.getElementById('history-map-feedback');
+  const date=document.getElementById('history-date');
+  for(const key of [...new Set(entries.map(e=>e.dateKey))]){const option=document.createElement('option');option.value=key;option.textContent=key;date.append(option);}
+  date.addEventListener('change',filter);
   let maps,map,marker,paths=[],filtered=entries;
   function selectedEntry() {return filtered.find(entry=>entry.id===selector.value) || filtered[0];}
   function updatePosition() {
@@ -27,7 +30,7 @@ if(selector) {
   }
   function filter() {
     const previous=selector.value;
-    filtered=entries.filter(entry=>(!from.value || entry.dateKey>=from.value) && (!to.value || entry.dateKey<=to.value) &&
+    filtered=entries.filter(entry=>(!date.value || entry.dateKey===date.value) && (!from.value || entry.dateKey>=from.value) && (!to.value || entry.dateKey<=to.value) &&
       (source.value==='all' || entry.isSample===(source.value==='sample')));
     selector.replaceChildren();
     for(const entry of filtered) {const option=document.createElement('option');option.value=entry.id;option.textContent=`${entry.receivedLabel} · ${entry.isSample?'Sample':'Device log'}`;selector.append(option);}
@@ -37,16 +40,18 @@ if(selector) {
     const visible=new Set(filtered.map(entry=>entry.id));
     for(const row of document.querySelectorAll('[data-entry-id]')) row.hidden=!visible.has(row.dataset.entryId);
     updatePaths();updatePosition();
+    if(map && filtered.length)map.fitBounds(maps.latLngBounds(filtered.map(e=>[e.latitude,e.longitude])),{padding:[35,35]});
   }
   for(const control of [from,to,source]) control.addEventListener('change',filter);
-  document.getElementById('history-reset').addEventListener('click',()=>{from.value='';to.value='';source.value='all';filter();});
+  document.getElementById('history-reset').addEventListener('click',()=>{from.value='';to.value='';source.value='all';date.selectedIndex=0;filter();});
   selector.addEventListener('change',updatePosition);
-  updatePosition();
+  filter();
   loadMapLibrary().then(api=>{
     maps=api;const entry=selectedEntry();
     map=maps.map('status-history-map',{zoomControl:false,scrollWheelZoom:false}).setView(entry?[entry.latitude,entry.longitude]:[14.39453,120.825889],13);
     addBaseMap(maps,map);
     updatePaths();updatePosition();
+    if(filtered.length)map.fitBounds(maps.latLngBounds(filtered.map(e=>[e.latitude,e.longitude])),{padding:[35,35]});
   }).catch(()=>{
     const note=document.createElement('p');note.textContent='Map unavailable. Exact coordinates remain available in the status selector and table.';note.className='map-unavailable';document.getElementById('status-history-map').replaceChildren(note);
   });

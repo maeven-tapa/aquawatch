@@ -41,7 +41,7 @@
 
   <section class="dashboard-card full-width">
     <div class="page-header-row"><h2>Recent alerts</h2><a class="button button-secondary" href="{% url 'alerts' %}">View all</a></div>
-    {% if alerts %}<div class="panel-grid">{% for alert in alerts %}<div class="panel-card"><strong>{{ alert.type }}</strong><div class="panel-meta">{{ alert.location }} &middot; {{ alert.time }}</div><div class="severity-pill severity-{{ alert.severity|lower }}">{{ alert.severity }}</div><p>{{ alert.description }}</p></div>{% endfor %}</div>{% else %}<p>No alerts yet.</p>{% endif %}
+    {% if alerts %}<div class="panel-grid">{% for alert in alerts %}<div class="panel-card"><strong>{{ alert.type }}</strong><div class="panel-meta">{{ alert.location }} &middot; {{ alert.time }}</div><div class="severity-pill severity-{{ alert.severity|lower }}">{{ alert.severity }}</div><p>{{ alert.description }}</p><form method="post" action="{% url 'dismiss_alert' alert.pk %}">{% csrf_token %}<button class="button button-secondary" type="submit">Dismiss</button></form></div>{% endfor %}</div>{% else %}<p>No alerts yet.</p>{% endif %}
   </section>
 
   <section class="dashboard-card full-width">

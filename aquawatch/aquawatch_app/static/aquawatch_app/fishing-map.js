@@ -24,6 +24,12 @@ function selectZone(zone, scroll=true) {
   selectedId=zone.id; tripFor=null; monitoring.hidden=true;
   document.getElementById('habitat-title').textContent=zone.title;
   content.replaceChildren(element('p',`Reference pin: ${zone.center.lat.toFixed(6)}, ${zone.center.lng.toFixed(6)} · Draft habitat outline`,'muted'));
+  content.append(element('p',`Area: ${(zone.area_square_meters/10000).toFixed(2)} hectares (${(zone.area_square_meters/1e6).toFixed(3)} km²)`));
+  if(document.getElementById('zone-editor')) {
+    const edit=element('button','Edit location, size and shape','button');
+    edit.type='button';edit.addEventListener('click',()=>window.dispatchEvent(new CustomEvent('edit-fishing-zone',{detail:zone})));
+    content.append(edit);
+  }
   const cards=element('div',undefined,'habitat-fish-grid');
   for(const fish of data.fish) {
     const card=element('article',undefined,'habitat-fish-card');
@@ -52,7 +58,7 @@ document.querySelector('.habitat-tabs').addEventListener('keydown',event=>{
 document.getElementById('close-details').addEventListener('click',()=>monitoring.hidden=true);
 document.getElementById('show-fishing-zone').addEventListener('click',()=>{
   monitoring.hidden=true;
-  if(map && bounds) map.fitBounds(bounds,{padding:[45,45]});
+  if(map && bounds?.isValid()) map.fitBounds(bounds,{padding:[45,45]});
   else document.getElementById('habitat-catalog-title').scrollIntoView({behavior:'smooth'});
 });
 document.getElementById('show-monitoring-area').addEventListener('click',()=>{
@@ -63,7 +69,7 @@ document.getElementById('show-monitoring-area').addEventListener('click',()=>{
 async function startMap() {
   try {
     maps=await loadMapLibrary();
-    map=maps.map('map',{zoomControl:false,scrollWheelZoom:false}).setView([data.zones[0].center.lat,data.zones[0].center.lng],12);
+    map=maps.map('map',{zoomControl:false,scrollWheelZoom:false}).setView([(data.zones[0]?.center.lat ?? 14.41),(data.zones[0]?.center.lng ?? 120.77)],12);
     addBaseMap(maps,map);
     const monitoringCircle=maps.circle([config.area.lat,config.area.lng],{radius:20000,fillColor:'#00a8b5',fillOpacity:.08,color:'#00a8b5',opacity:.6,weight:2}).addTo(map);
     const monitoringMarker=maps.circleMarker([config.area.lat,config.area.lng],{radius:8,color:'#fff',fillColor:'#4285f4',fillOpacity:1,weight:2}).addTo(map);
@@ -79,7 +85,7 @@ async function startMap() {
       polygon.on('click',()=>selectZone(zone)); marker.on('click',()=>selectZone(zone));
       zone.boundary.forEach(point=>bounds.extend([point.lat,point.lng]));
     }
-    map.fitBounds(bounds,{padding:[45,45]});
+    if(bounds.isValid()) map.fitBounds(bounds,{padding:[45,45]});
     const resize=new ResizeObserver(()=>map.invalidateSize({pan:false}));resize.observe(document.getElementById('map'));
   } catch(error) {
     feedback.textContent=error.message;feedback.hidden=false;

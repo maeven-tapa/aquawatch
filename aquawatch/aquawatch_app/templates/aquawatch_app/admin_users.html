@@ -1,0 +1,7 @@
+{% extends 'aquawatch_app/base.html' %}
+{% block content %}
+<section class="page-card"><div class="page-header-row"><div><h1>Users</h1><p class="muted">Registered AquaWatch accounts and their devices.</p></div>{% if user.is_superuser %}<a class="button button-secondary" href="{% url 'admin:auth_user_changelist' %}">Manage accounts in Django admin</a>{% endif %}</div>
+<div class="history-table-scroll"><table class="history-table"><thead><tr><th>Account</th><th>Name</th><th>Email</th><th>Access</th><th>Status</th><th>Devices</th></tr></thead><tbody>
+{% for account in users %}<tr><td>{{ account.username }}</td><td>{{ account.name|default:'—' }}</td><td>{{ account.email }}</td><td>{% if account.is_admin %}Administrator{% else %}User{% endif %}</td><td>{% if account.active %}Active{% else %}Inactive{% endif %}</td><td>{{ account.device_count }}</td></tr>{% endfor %}
+</tbody></table></div></section>
+{% endblock %}

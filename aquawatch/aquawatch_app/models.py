@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+import uuid
 
 
 class UserProfile(models.Model):
@@ -71,6 +72,7 @@ class Device(models.Model):
 
 class Alert(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    device = models.ForeignKey(Device, null=True, blank=True, on_delete=models.SET_NULL, related_name='alerts')
     source_id = models.CharField(max_length=256, blank=True)
     type = models.CharField(max_length=128)
     location = models.CharField(max_length=128)
@@ -80,6 +82,18 @@ class Alert(models.Model):
 
     def __str__(self):
         return f'{self.type} alert at {self.location}'
+
+
+class AlertDismissal(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    alert_key = models.CharField(max_length=256)
+    dismissed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=['user','alert_key'], name='alert_dismissal_user_key')]
+
+    def __str__(self):
+        return f'{self.user.username}: {self.alert_key}'
 
 
 class Report(models.Model):
@@ -143,3 +157,38 @@ class DeviceReading(models.Model):
 
     class Meta:
         indexes = [models.Index(fields=['device', '-received_at'], name='reading_device_time')]
+
+
+class FishingZone(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    source_id = models.CharField(max_length=128, unique=True, null=True, blank=True)
+    title = models.CharField(max_length=128)
+    month = models.DateField(help_text='First day of the calendar month, for example 2026-11-01.')
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    boundary = models.JSONField(help_text='Ordered vertices: [{"lat": 14.4, "lng": 120.78}, ...]')
+    area_square_meters = models.FloatField(default=0, editable=False)
+    active = models.BooleanField(default=True)
+    version = models.PositiveIntegerField(default=1, editable=False)
+    updated_at = models.DateTimeField(auto_now=True)
+    updated_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+
+    class Meta:
+        ordering = ['month', 'title', 'id']
+        indexes = [models.Index(fields=['month', 'active'], name='zone_month_active')]
+
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        from .zone_geometry import validate_geometry
+        if self.month and self.month.day != 1:
+            raise ValidationError({'month': 'Use the first day of the month.'})
+        self.area_square_meters = validate_geometry(self.boundary, self.latitude, self.longitude)
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        if not self._state.adding:
+            self.version += 1
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f'{self.title} ({self.month:%B %Y})'

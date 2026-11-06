@@ -28,6 +28,9 @@ from .forms import (
 from .models import Alert, Device, MonitoringArea, Report, UserProfile
 from .accounts import EMAIL_ALREADY_REGISTERED, email_is_registered
 from .fishing import device_status_history, fishing_catalog
+from .alert_services import active_alerts, dismiss_alert, serialize_alert
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
 
 
 def get_or_create_profile(user: User) -> UserProfile:
@@ -216,10 +219,12 @@ def dashboard(request):
     else:
         weather_status = f'{area.label} - Live weather: {weather.get("location")} '
 
-    alerts = Alert.objects.filter(user=user).order_by('-id')[:5]
-    devices = Device.objects.filter(user=user).order_by('-id')[:5]
-    alert_count = Alert.objects.filter(user=user).count()
-    device_count = Device.objects.filter(user=user).count()
+    alert_items = active_alerts(None if user.is_staff or user.is_superuser else user)
+    device_items = Device.objects.all() if user.is_staff or user.is_superuser else Device.objects.filter(user=user)
+    alerts = alert_items.order_by('-id')[:5]
+    devices = device_items.order_by('-id')[:5]
+    alert_count = alert_items.count()
+    device_count = device_items.count()
 
     wind_speed = float(weather.get('wind_speed', 0))
     visibility = int(weather.get('visibility', 0))
@@ -277,7 +282,7 @@ def location(request):
 @login_required
 def devices(request):
     user = request.user
-    items = Device.objects.filter(user=user).order_by('-id')
+    items = (Device.objects.all() if user.is_staff or user.is_superuser else Device.objects.filter(user=user)).select_related('user').order_by('-id')
     return render(request, 'aquawatch_app/devices.html', {'devices': items})
 
 
@@ -297,7 +302,8 @@ def add_device(request):
 
 @login_required
 def device_detail(request, device_id):
-    device = get_object_or_404(Device, id=device_id, user=request.user)
+    accessible = Device.objects.all() if request.user.is_staff or request.user.is_superuser else Device.objects.filter(user=request.user)
+    device = get_object_or_404(accessible, id=device_id)
     history = device_status_history(device)
     return render(request, 'aquawatch_app/device_detail.html', {
         'device': device, 'history': history, 'sample_count': sum(row['isSample'] for row in history),
@@ -308,8 +314,28 @@ def device_detail(request, device_id):
 @login_required
 def alerts(request):
     user = request.user
-    items = Alert.objects.filter(user=user).order_by('-id')
+    items = active_alerts(None if user.is_staff or user.is_superuser else user).select_related('user','device').order_by('-id')
     return render(request, 'aquawatch_app/alerts.html', {'alerts': items})
+
+
+@login_required
+@require_POST
+def dismiss_alert_view(request,alert_id):
+    accessible=Alert.objects.all() if request.user.is_staff or request.user.is_superuser else Alert.objects.filter(user=request.user)
+    alert=get_object_or_404(accessible,pk=alert_id)
+    dismiss_alert(alert)
+    if request.headers.get('X-Requested-With')=='XMLHttpRequest':
+        return JsonResponse({'dismissed':True})
+    messages.success(request,'Alert dismissed. It will stay dismissed on synced devices.')
+    return redirect('alerts')
+
+
+@login_required
+def alerts_feed(request):
+    items=active_alerts(None if request.user.is_staff or request.user.is_superuser else request.user).select_related('device').order_by('-id')
+    response=JsonResponse({'alerts':[serialize_alert(alert) for alert in items]})
+    response['Cache-Control']='no-store'
+    return response
 
 
 @login_required
@@ -393,14 +419,27 @@ def user_logout(request):
 
 @login_required
 def map_view(request):
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+    from .zone_services import month_date, serialize_zone
+    from .models import FishingZone
+    from .api import ApiError
     area = get_or_create_monitoring_area(request.user)
     profile = get_or_create_profile(request.user)
+    try:
+        month = month_date(request.GET.get('month',datetime.now(ZoneInfo('Asia/Manila')).strftime('%Y-%m')))
+    except ApiError:
+        month = month_date(datetime.now(ZoneInfo('Asia/Manila')).strftime('%Y-%m'))
+    serial=month.year*12+month.month-1
+    def key(n): return f'{n//12:04d}-{n%12+1:02d}'
+    catalog=dict(fishing_catalog())
+    catalog['zones']=[serialize_zone(z) for z in FishingZone.objects.filter(month=month,active=True)]
     return render(request, 'aquawatch_app/map.html', {
-        'area': area,
-        'profile': profile,
-        'device_count': Device.objects.filter(user=request.user, status__iexact='Active').count(),
-        'google_maps_key': settings.GOOGLE_MAPS_API_KEY,
-        'fishing_data': fishing_catalog(),
-        'map_config': {'key': settings.GOOGLE_MAPS_API_KEY, 'dark': profile.dark_mode,
+        'area': area, 'profile': profile,
+        'device_count': (Device.objects.all() if request.user.is_staff or request.user.is_superuser else Device.objects.filter(user=request.user)).filter(status__iexact='Active').count(),
+        'fishing_data': catalog, 'zone_month': month.strftime('%Y-%m'),
+        'month_label': month.strftime('%B %Y'), 'previous_month':key(serial-1) if month.year>2000 or month.month>1 else None,
+        'next_month':key(serial+1) if month.year<2100 or month.month<12 else None,
+        'map_config': {'dark': profile.dark_mode,
                        'area': {'lat': area.latitude, 'lng': area.longitude, 'label': area.label}},
     })

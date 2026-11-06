@@ -1,3 +1,17 @@
 {% extends 'aquawatch_app/base.html' %}
-{% block content %}<div class="page-card"><h1>Alerts</h1><p class="muted">Review active coastal safety notifications.</p>
-{% if alerts %}<ul class="item-list">{% for alert in alerts %}<li><div class="item-heading"><strong>{{ alert.type }}</strong><span class="severity-pill severity-{{ alert.severity|lower }}">{{ alert.severity }}</span></div><div>{{ alert.location }} &middot; {{ alert.time }}</div><p>{{ alert.description }}</p><details><summary>Recommended action</summary><p>Review the live map and contact nearby response teams if this alert remains active.</p></details></li>{% endfor %}</ul>{% else %}<div class="empty-state"><strong>No active alerts</strong><p>New incidents and device warnings will appear here.</p></div>{% endif %}</div>{% endblock %}
+{% load static %}
+{% block content %}
+<section class="page-card"><div class="page-header-row"><div><h1>Alerts</h1><p class="muted">Active coastal safety notifications shared with mobile.</p></div><button type="button" class="button button-secondary" id="refresh-alerts">Refresh</button></div>
+<p id="alerts-sync-status" class="muted" role="status"></p>
+<div id="alert-csrf" hidden>{% csrf_token %}</div>
+<div id="alerts-list">
+{% if alerts %}<ul class="item-list">{% for alert in alerts %}<li data-alert-id="{{ alert.pk }}">
+<div class="item-heading"><strong>{{ alert.type }}</strong><span class="severity-pill severity-{{ alert.severity|lower }}">{{ alert.severity }}</span></div>
+<div>{{ alert.location }} &middot; {{ alert.time }}</div><p>{{ alert.description }}</p>
+{% if alert.device %}<p>Device: {{ alert.device.name }}</p>{% endif %}
+<details><summary>Recommended action</summary><p>Review the live map and contact nearby response teams if this alert remains active.</p></details>
+<form class="alert-dismiss-form form-actions" method="post" action="{% url 'dismiss_alert' alert.pk %}">{% csrf_token %}<button type="submit" class="button button-secondary">Dismiss</button></form>
+</li>{% endfor %}</ul>{% else %}<div class="empty-state"><strong>No active alerts</strong><p>New incidents and device warnings will appear here.</p></div>{% endif %}
+</div></section>
+{% endblock %}
+{% block scripts %}<script type="module" src="{% static 'aquawatch_app/alerts.js' %}"></script>{% endblock %}
