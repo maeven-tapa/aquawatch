@@ -24,14 +24,16 @@ def validate_geometry(boundary, latitude, longitude):
     if not isinstance(boundary,list) or not 3<=len(boundary)<=100:
         raise ValidationError('Use 3–100 boundary vertices, without repeating the first vertex.')
     points=[]
-    for vertex in boundary:
+    for index, vertex in enumerate(boundary, 1):
         if not isinstance(vertex,dict) or set(vertex)!={'lat','lng'}:
             raise ValidationError('Each boundary vertex must contain lat and lng.')
         lat,lng=vertex['lat'],vertex['lng']
         if any(type(n) not in (int,float) or not math.isfinite(n) for n in (lat,lng)):
             raise ValidationError('Coordinates must be finite numbers.')
         if not inside_water((lng,lat)):
-            raise ValidationError('The entire zone must stay inside the offshore fishing area, away from land.')
+            raise ValidationError(
+                f'Boundary point {index} ({lat:.6f}, {lng:.6f}) is outside the configured offshore fishing area. '
+                'Move it inside the dashed area on the zone editor map.')
         points.append((lng,lat))
     if len(set(points))!=len(points):
         raise ValidationError('Boundary vertices must be distinct.')
@@ -45,9 +47,9 @@ def validate_geometry(boundary, latitude, longitude):
                 cross(a,b,c)*cross(a,b,d)<=0 and cross(c,d,a)*cross(c,d,b)<=0):
                 raise ValidationError('Boundary edges must not cross or touch each other.')
     if any(type(n) not in (int,float) or not math.isfinite(n) for n in (latitude,longitude)):
-        raise ValidationError('Zone center must have valid coordinates.')
+        raise ValidationError('Zone center must have valid coordinates.', code='invalid_center')
     if not point_in_polygon((longitude,latitude),points):
-        raise ValidationError('The center pin must be inside the zone boundary.')
+        raise ValidationError('The center pin must be inside the zone boundary. Move the pin or use “Center pin in boundary”.', code='center_outside')
     origin=points[0]
     sx=111320*math.cos(math.radians(latitude))
     xy=[((x-origin[0])*sx,(y-origin[1])*111320) for x,y in points]

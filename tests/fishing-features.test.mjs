@@ -2,15 +2,39 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {HOUR, dateKey, dayStart, candidateWindow, tideTurns, parseForecast} from '../aquawatch/aquawatch_app/static/aquawatch_app/fishing-forecast.js';
+import {zoneDateLabel,publicationLabel,recurrenceLabel} from '../aquawatch/aquawatch_app/static/aquawatch_app/zone-details.js';
+import {boundaryCenter,starterBoundary} from '../aquawatch/aquawatch_app/static/aquawatch_app/zone-shape-tools.js';
 
 const time=(hour,minute=0)=>Date.parse(`2026-11-06T${String(hour).padStart(2,'0')}:${String(minute).padStart(2,'0')}:00+08:00`);
 const fixture=(levels=Array.from({length:24},(_,i)=>i/10))=>({hours:levels.map((level,i)=>({time:time(i),seaLevel:level,waveHeight:.3,windSpeed:2,weatherCode:0})),daylight:[{sunrise:time(6),sunset:time(18)}],fetchedAt:time(6)});
+
+test('zone details preserve the exact date and show publication in Philippine time',()=>{
+  assert.equal(zoneDateLabel('2027-01-17'),'January 17, 2027');
+  assert.equal(publicationLabel({active:false,published_at:null}),'Unpublished');
+  assert.match(publicationLabel({active:true,published_at:null}),/unavailable/);
+  const published=publicationLabel({active:true,published_at:'2026-11-07T18:30:00Z'});
+  assert.match(published,/November 8, 2026/);
+  assert.match(published,/2:30/);
+  assert.match(recurrenceLabel({date:'2026-11-17',repeats_annually:true}),/Original zone date: November 17, 2026/);
+  assert.equal(recurrenceLabel({repeats_annually:false}),'Applies to this year only');
+});
+
+test('center repair finds an interior point for a concave boundary',()=>{
+  const points=[{lat:0,lng:0},{lat:0,lng:4},{lat:1,lng:4},{lat:1,lng:1},{lat:4,lng:1},{lat:4,lng:0}];
+  const center=boundaryCenter(points);
+  assert.ok(center.lng>0 && center.lat>0 && (center.lat<1 || center.lng<1));
+  const starter=boundaryCenter(starterBoundary);
+  assert.ok(starter.lat>14.407 && starter.lat<14.413 && starter.lng>120.777 && starter.lng<120.783);
+  assert.throws(()=>boundaryCenter([]));
+  assert.throws(()=>boundaryCenter([{lat:1,lng:0},{lat:1,lng:1},{lat:1,lng:2}]));
+});
 
 test('monthly zones and 175 labeled afternoon samples match the updated catalog',()=>{
   const data=JSON.parse(readFileSync(new URL('../aquawatch/aquawatch_app/static/aquawatch_app/fishing-data.json',import.meta.url),'utf8'));
   assert.equal(data.zones.length,10);assert.equal(data.fish.length,6);assert.equal(data.sampleHistory.length,175);
   assert.deepEqual(data.months.map(month=>month.month),Array.from({length:12},(_,i)=>`2026-${String(i+1).padStart(2,'0')}`));
   assert.deepEqual(data.months.map(month=>month.zones.length),[14,11,18,13,20,16,12,17,15,16,10,13]);
+  assert.equal(new Set(data.months.flatMap(month=>month.zones.map(z=>z.id))).size,175);
   const counts=new Map();
   for(const row of data.sampleHistory) {
     const key=dateKey(row.receivedAt);counts.set(key,(counts.get(key)||0)+1);

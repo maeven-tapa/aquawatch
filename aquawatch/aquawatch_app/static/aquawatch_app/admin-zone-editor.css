@@ -1,0 +1,9 @@
+.zone-admin-map-copy { padding: 12px; }
+.zone-admin-preview p.help { margin-left: 0; padding-left: 0; }
+#admin-zone-map { height: 380px; width: 100%; max-width: 900px; background: #e3ecee; z-index: 0; }
+.zone-admin-preview .button { cursor: pointer; margin: 4px 4px 4px 0; }
+.zone-admin-preview .leaflet-container { color: #182e36; }
+.zone-admin-preview .zone-vertex-marker { background: #fff; color: #005f58; border: 2px solid #008f83; border-radius: 50%; text-align: center; line-height: 24px; font-weight: bold; box-sizing: border-box; }
+.zone-admin-preview .zone-center-marker { background: #2475d7; border: 3px solid white; border-radius: 50%; box-shadow: 0 1px 4px #333; box-sizing: border-box; }
+.zone-admin-preview .map-tile-status { background: white; color: #182e36; padding: 6px; max-width: 240px; }
+@media (max-width: 600px) { #admin-zone-map { height: 300px; } }

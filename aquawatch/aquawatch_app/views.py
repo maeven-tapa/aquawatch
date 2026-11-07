@@ -424,23 +424,26 @@ def user_logout(request):
 def map_view(request):
     from datetime import datetime
     from zoneinfo import ZoneInfo
-    from .zone_services import month_date, serialize_zone
-    from .models import FishingZone
+    from .zone_services import month_date, monthly_zones, serialize_zone
+    from .zone_geometry import ENVELOPE
     from .api import ApiError
     area = get_or_create_monitoring_area(request.user)
     profile = get_or_create_profile(request.user)
+    today = datetime.now(ZoneInfo('Asia/Manila')).date()
     try:
-        month = month_date(request.GET.get('month',datetime.now(ZoneInfo('Asia/Manila')).strftime('%Y-%m')))
+        month = month_date(request.GET.get('month',today.strftime('%Y-%m')))
     except ApiError:
-        month = month_date(datetime.now(ZoneInfo('Asia/Manila')).strftime('%Y-%m'))
+        month = month_date(today.strftime('%Y-%m'))
     serial=month.year*12+month.month-1
     def key(n): return f'{n//12:04d}-{n%12+1:02d}'
     catalog=dict(fishing_catalog())
-    catalog['zones']=[serialize_zone(z) for z in FishingZone.objects.filter(month=month,active=True)]
+    catalog['zones']=[serialize_zone(z,month) for z in monthly_zones(request.user,month)]
     return render(request, 'aquawatch_app/map.html', {
         'area': area, 'profile': profile,
         'device_count': (Device.objects.all() if request.user.is_staff or request.user.is_superuser else Device.objects.filter(user=request.user)).filter(status__iexact='Active').count(),
         'fishing_data': catalog, 'zone_month': month.strftime('%Y-%m'),
+        'zone_date': today.isoformat() if (month.year, month.month) == (today.year, today.month) else month.isoformat(),
+        'zone_envelope': [{'lat':lat,'lng':lng} for lng,lat in ENVELOPE],
         'month_label': month.strftime('%B %Y'), 'previous_month':key(serial-1) if month.year>2000 or month.month>1 else None,
         'next_month':key(serial+1) if month.year<2100 or month.month<12 else None,
         'map_config': {'dark': profile.dark_mode,

@@ -1,0 +1,25 @@
+{% extends "admin/change_form.html" %}
+{% load static %}
+{% block extrahead %}
+{{ block.super }}
+{% if has_change_permission or add and has_add_permission %}
+<link rel="stylesheet" href="{% static 'aquawatch_app/admin-zone-editor.css' %}">
+<script type="module" src="{% static 'aquawatch_app/admin-zone-editor.js' %}"></script>
+{% endif %}
+{% endblock %}
+{% block field_sets %}
+{% if has_change_permission or add and has_add_permission %}
+<fieldset class="module aligned zone-admin-preview">
+  <h2>Fishing zone map</h2>
+  <div class="zone-admin-map-copy">
+    <p>Keep every boundary point inside the dashed fishing area. Click to add a point, drag numbered points to reshape the boundary, and drag the blue center pin to place it inside the zone. Right-click a numbered point to remove it.</p>
+    <div id="admin-zone-map" aria-label="Fishing zone boundary editor"></div>
+    <p><button type="button" class="button" id="admin-zone-starter">Use starter boundary</button> <button type="button" class="button" id="admin-zone-center">Center pin in boundary</button> <button type="button" class="button" id="admin-zone-clear">Clear boundary</button></p>
+    <p id="admin-zone-status" role="status"></p>
+    <p class="help">The map updates the latitude, longitude and boundary fields below. The dashed outline shows the app’s configured editing area.</p>
+  </div>
+</fieldset>
+{{ zone_envelope|json_script:'zone-envelope' }}
+{% endif %}
+{{ block.super }}
+{% endblock %}

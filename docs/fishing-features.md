@@ -1,7 +1,8 @@
 # Fishing features shared with Android
 
-The map now offers the same 11 irregular Amaya-area polygons, fish markers, six
-habitat profiles, and source links as Android. Select a marker, polygon, or area
+The map preserves the original 175 illustrative Amaya-area polygons across the
+12 monthly catalogs, with fish markers, six habitat profiles, and source links.
+Select a marker, polygon, or area
 button, then switch between habitat information and the trip-planning tab. The
 area list and descriptions remain usable if a map cannot load. These two map
 views bundle Leaflet 1.9.4 (BSD license included) and use attributed OpenStreetMap
@@ -41,10 +42,50 @@ it remains inside the Android project. Deployment needs only the generated
 4. Run `python aquawatch/manage.py check` and
    `python aquawatch/manage.py makemigrations --check --dry-run`.
 
-No new model migration is introduced. Existing migrations 0004 and 0005 are
-still required for DeviceReading and the mobile API. Use the existing Render
+Apply migration 0009 for exact fishing-zone dates and publication timestamps,
+then 0010 for yearly repetition. These migrations preserve the original zone data.
+Existing migrations are still required for DeviceReading and the mobile API. Use the existing Render
 deployment process; this workspace update does not publish the site or change
 production records.
+
+## Exact zone dates and publication
+
+Both the Django admin and map editor accept an exact `YYYY-MM-DD` zone date.
+Monthly map browsing includes every zone dated within the selected month. Each
+zone's details show its selected date and first-publication time in Asia/Manila.
+The publication timestamp is set by the server when a new zone is published or a
+draft is first activated, and stays unchanged through edits and republication.
+Existing records retain their original dates; their historical publication time
+is shown as unavailable because it was not previously recorded.
+
+The Django admin now includes a map with the configured fishing-area outline,
+draggable boundary vertices and center pin, a valid starter boundary, and a
+center-pin repair button. Both editors show the allowed area as a dashed outline.
+Out-of-area coordinates identify the offending boundary point. The configured
+area remains an application constraint, rather than a surveyed coastline.
+
+The zone API accepts `date` on writes and returns `date` and `published_at`.
+`published_at` is read-only. The `month` request/response value remains supported
+for older mobile clients and monthly filtering. A month-only edit within the
+same month preserves an existing exact day; moving to another month via that
+legacy input uses its first day. Updated clients should send `date`.
+
+## Yearly fishing zones
+
+Zones default to **Repeat every year** in both admin editors. A zone dated
+November 17, 2026 appears in November 2026, November 2027 and later Novembers.
+Turn off repetition for a single-year entry. Zones never appear before their
+original year, and unpublished zones remain visible only to administrators.
+Use **Choose month and year** on the map to jump directly to next November.
+
+Web and API reads share the same monthly selection. The API returns
+`repeats_annually` and `occurrence_date` for the selected year, while `date` and
+`published_at` retain their original values. A leap-day zone uses February 28
+in non-leap years. Reads do not create duplicate database records. Editing or
+unpublishing a recurring zone affects all its yearly appearances.
+
+Migration 0010 adds yearly repetition without inserting any zones. The original
+2026 seed and catalog remain intact, including their monthly counts and shapes.
 
 
 ## OpenStreetMap tile identification

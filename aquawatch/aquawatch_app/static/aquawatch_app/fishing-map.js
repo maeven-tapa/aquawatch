@@ -1,5 +1,6 @@
 import {loadMapLibrary, addBaseMap, element, reference} from './map-utils.js';
 import {mountTripPlanner} from './trip-planner.js';
+import {zoneDateLabel,publicationLabel,recurrenceLabel} from './zone-details.js';
 
 const data=JSON.parse(document.getElementById('fishing-data').textContent);
 const config=JSON.parse(document.getElementById('map-config').textContent);
@@ -24,6 +25,7 @@ function selectZone(zone, scroll=true) {
   selectedId=zone.id; tripFor=null; monitoring.hidden=true;
   document.getElementById('habitat-title').textContent=zone.title;
   content.replaceChildren(element('p',`Reference pin: ${zone.center.lat.toFixed(6)}, ${zone.center.lng.toFixed(6)} · Draft habitat outline`,'muted'));
+  content.append(element('p',`Zone date: ${zoneDateLabel(zone.occurrence_date||zone.date)}`),element('p',recurrenceLabel(zone),'muted'),element('p',publicationLabel(zone),'muted'));
   content.append(element('p',`Area: ${(zone.area_square_meters/10000).toFixed(2)} hectares (${(zone.area_square_meters/1e6).toFixed(3)} km²)`));
   if(document.getElementById('zone-editor')) {
     const edit=element('button','Edit location, size and shape','button');

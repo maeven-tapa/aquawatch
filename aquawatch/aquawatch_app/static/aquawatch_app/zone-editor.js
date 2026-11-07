@@ -1,4 +1,5 @@
 import {loadMapLibrary,addBaseMap} from './map-utils.js';
+import {starterBoundary,boundaryCenter,addFishingEnvelope} from './zone-shape-tools.js';
 const editor=document.getElementById('zone-editor'), form=document.getElementById('zone-form');
 const field=id=>document.getElementById(`zone-${id}`);
 let current=null, map, L, polygon, centerMarker, handles=[];
@@ -32,13 +33,15 @@ function redraw() {
 async function open(zone) {
   current=zone;editor.hidden=false;
   field('name').value=zone?.title||'New Amaya fishing zone';
-  field('month').value=zone?.month||field('month').defaultValue;
+  field('date').value=zone?.date||field('date').defaultValue;
   field('lat').value=zone?.center.lat??14.41;field('lng').value=zone?.center.lng??120.78;
   field('active').checked=zone?.active??true;field('scale').value=100;
-  field('boundary').value=JSON.stringify(zone?.boundary||[{lat:14.407,lng:120.777},{lat:14.407,lng:120.783},{lat:14.413,lng:120.783},{lat:14.413,lng:120.777}],null,2);
+  field('repeats-annually').checked=zone?.repeats_annually??true;
+  field('boundary').value=JSON.stringify(zone?.boundary||starterBoundary,null,2);
   editor.scrollIntoView({behavior:'smooth'});
   if(!map)try {
     L=await loadMapLibrary();map=L.map('zone-edit-map',{scrollWheelZoom:false}).setView([14.41,120.78],13);addBaseMap(L,map);
+    addFishingEnvelope(L,map,JSON.parse(document.getElementById('zone-envelope').textContent));
     map.on('click',e=>{try{const points=boundary();points.push({lat:e.latlng.lat,lng:e.latlng.lng});field('boundary').value=JSON.stringify(points,null,2);redraw();}catch(error){field('save-status').textContent=error.message;}});
   } catch(error){field('save-status').textContent=`Map unavailable. You can edit coordinates below. ${error.message}`;}
   redraw();if(map){map.invalidateSize();if(polygon)map.fitBounds(polygon.getBounds(),{padding:[35,35]});}
@@ -47,6 +50,9 @@ window.addEventListener('edit-fishing-zone',e=>open(e.detail));
 document.getElementById('new-fishing-zone').addEventListener('click',()=>open(null));
 document.getElementById('close-zone-editor').addEventListener('click',()=>editor.hidden=true);
 document.getElementById('clear-zone-points').addEventListener('click',()=>{field('boundary').value='[]';redraw();});
+document.getElementById('center-zone-pin').addEventListener('click',()=>{
+  try{const p=boundaryCenter(boundary());field('lat').value=p.lat;field('lng').value=p.lng;redraw();}catch(error){field('save-status').textContent=error.message;}
+});
 for(const id of ['boundary','lat','lng'])field(id).addEventListener('change',redraw);
 document.getElementById('resize-zone').addEventListener('click',()=>{
   try{const ratio=Number(field('scale').value)/100;if(!Number.isFinite(ratio)||ratio<.1||ratio>3)throw Error('Choose a size from 10% to 300%.');const c=center();field('boundary').value=JSON.stringify(boundary().map(p=>({lat:c.lat+(p.lat-c.lat)*ratio,lng:c.lng+(p.lng-c.lng)*ratio})),null,2);field('scale').value=100;redraw();if(map&&polygon)map.fitBounds(polygon.getBounds(),{padding:[35,35]});}catch(error){field('save-status').textContent=error.message;}
@@ -54,9 +60,9 @@ document.getElementById('resize-zone').addEventListener('click',()=>{
 form.addEventListener('submit',async e=>{
   e.preventDefault();const button=document.getElementById('save-zone');button.disabled=true;
   try{
-    const month=field('month').value;
-    const response=await fetch(`/fishing-zones/${current?`${current.id}/`:''}`,{method:'POST',headers:{'Content-Type':'application/json','X-CSRFToken':form.querySelector('[name=csrfmiddlewaretoken]').value},body:JSON.stringify({title:field('name').value,month,center:center(),boundary:boundary(),active:field('active').checked,...(current?{version:current.version}:{})})});
+    const date=field('date').value;
+    const response=await fetch(`/fishing-zones/${current?`${current.id}/`:''}`,{method:'POST',headers:{'Content-Type':'application/json','X-CSRFToken':form.querySelector('[name=csrfmiddlewaretoken]').value},body:JSON.stringify({title:field('name').value,date,center:center(),boundary:boundary(),active:field('active').checked,repeats_annually:field('repeats-annually').checked,...(current?{version:current.version}:{})})});
     const result=await response.json();if(!response.ok)throw Error(result.error||'Unable to save zone.');
-    window.location.assign(`/map/?month=${encodeURIComponent(month)}`);
+    window.location.assign(`/map/?month=${encodeURIComponent(date.slice(0,7))}`);
   }catch(error){field('save-status').textContent=error.message;}finally{button.disabled=false;}
 });

@@ -28,6 +28,10 @@
 <section class="page-card habitat-catalog" aria-labelledby="habitat-catalog-title">
   <div class="page-header-row"><h1 id="habitat-catalog-title">Amaya fishing zones</h1>{% if user.is_staff or user.is_superuser %}<button type="button" class="button" id="new-fishing-zone">Add fishing zone</button>{% endif %}</div>
   <p class="muted">Choose a fish marker, polygon, or area below for fish habitat and trip timing. These are illustrative outlines; municipal limits and fish presence are unverified.</p>
+  <form method="get" class="form-actions" id="zone-month-filter">
+    <label>Choose month and year<input type="month" name="month" value="{{ zone_month }}" min="2000-01" max="2100-12" required></label>
+    <button type="submit" class="button button-secondary">View month</button>
+  </form>
   <div class="habitat-area-list" id="habitat-area-list">
     {% for zone in fishing_data.zones %}<button type="button" class="button button-secondary habitat-area-choice" data-zone-id="{{ zone.id }}" aria-pressed="false">{{ zone.title }}</button>{% endfor %}
   </div>
@@ -46,18 +50,23 @@
   <div class="page-header-row"><h2 id="zone-editor-title">Fishing zone editor</h2><button type="button" class="button button-secondary" id="close-zone-editor">Cancel</button></div>
   <p>Click the editor map to add boundary points. Drag numbered points to reshape the zone. Drag the blue pin to move its center.</p>
   <form id="zone-form">{% csrf_token %}
-    <div class="zone-fields"><label>Zone name<input id="zone-name" maxlength="128" required></label><label>Month<input id="zone-month" type="month" min="2000-01" max="2100-12" value="{{ zone_month }}" required></label>
+    <div class="zone-fields"><label>Zone name<input id="zone-name" maxlength="128" required></label><label>Zone date<input id="zone-date" type="date" min="2000-01-01" max="2100-12-31" value="{{ zone_date }}" required></label>
     <label>Center latitude<input id="zone-lat" type="number" step="any" required></label><label>Center longitude<input id="zone-lng" type="number" step="any" required></label></div>
     <div id="zone-edit-map" class="zone-edit-map"></div>
+    <p class="muted">Keep the whole boundary inside the dashed fishing area and the center pin inside the boundary.</p>
+    <button type="button" class="button button-secondary" id="center-zone-pin">Center pin in boundary</button>
     <div class="form-actions"><button type="button" class="button button-secondary" id="clear-zone-points">Clear boundary</button><label>Resize (%)<input id="zone-scale" type="number" min="10" max="300" value="100"></label><button type="button" class="button button-secondary" id="resize-zone">Apply size</button></div>
     <label>Boundary vertices (JSON, in order)<textarea id="zone-boundary" rows="7" required></textarea></label>
     <p id="zone-area">Area: —</p><label><input type="checkbox" id="zone-active" checked> Published on user maps</label>
+    <label><input type="checkbox" id="zone-repeats-annually" checked> Repeat every year in this month</label>
+    <p class="muted">Recurring zones appear from their original year onward. Editing a recurring zone updates it for all years. Turn off yearly repetition for a single-year zone.</p>
     <p id="zone-save-status" role="status"></p><button type="submit" class="button" id="save-zone">Save fishing zone</button>
   </form>
 </section>
 {% endif %}
 {{ fishing_data|json_script:'fishing-data' }}
 {{ map_config|json_script:'map-config' }}
+{% if user.is_staff or user.is_superuser %}{{ zone_envelope|json_script:'zone-envelope' }}{% endif %}
 {% endblock %}
 {% block scripts %}
 <script type="module" src="{% static 'aquawatch_app/fishing-map.js' %}"></script>

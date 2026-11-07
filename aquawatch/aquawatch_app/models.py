@@ -1,5 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.utils import timezone
+from datetime import date as date_type
 import uuid
 
 
@@ -163,32 +165,51 @@ class FishingZone(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     source_id = models.CharField(max_length=128, unique=True, null=True, blank=True)
     title = models.CharField(max_length=128)
-    month = models.DateField(help_text='First day of the calendar month, for example 2026-11-01.')
+    date = models.DateField(help_text='Exact date for this fishing zone, for example 2026-11-07.')
+    repeats_annually = models.BooleanField(default=True,
+        help_text='Show this zone in the same month every year, starting with its exact date’s year. Turn off for a single-year zone.')
     latitude = models.FloatField()
     longitude = models.FloatField()
     boundary = models.JSONField(help_text='Ordered vertices: [{"lat": 14.4, "lng": 120.78}, ...]')
     area_square_meters = models.FloatField(default=0, editable=False)
     active = models.BooleanField(default=True)
+    published_at = models.DateTimeField(null=True, blank=True, editable=False,
+        help_text='Time this zone was first published. Older zones may have no recorded publication time.')
     version = models.PositiveIntegerField(default=1, editable=False)
     updated_at = models.DateTimeField(auto_now=True)
     updated_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
 
     class Meta:
-        ordering = ['month', 'title', 'id']
-        indexes = [models.Index(fields=['month', 'active'], name='zone_month_active')]
+        ordering = ['date', 'title', 'id']
+        indexes = [models.Index(fields=['date', 'active'], name='zone_date_active')]
 
     def clean(self):
         from django.core.exceptions import ValidationError
         from .zone_geometry import validate_geometry
-        if self.month and self.month.day != 1:
-            raise ValidationError({'month': 'Use the first day of the month.'})
-        self.area_square_meters = validate_geometry(self.boundary, self.latitude, self.longitude)
+        errors = {}
+        if isinstance(self.date, date_type) and not 2000 <= self.date.year <= 2100:
+            errors['date'] = 'Choose a date between 2000 and 2100.'
+        if self.boundary is not None and self.latitude is not None and self.longitude is not None:
+            try:
+                self.area_square_meters = validate_geometry(self.boundary, self.latitude, self.longitude)
+            except ValidationError as error:
+                field = 'latitude' if error.code in ('invalid_center', 'center_outside') else 'boundary'
+                errors[field] = error.messages
+        if errors:
+            raise ValidationError(errors)
 
     def save(self, *args, **kwargs):
         self.full_clean()
+        if self.active and self.published_at is None:
+            # Existing active records without a historical timestamp remain unknown.
+            was_active = not self._state.adding and type(self).objects.filter(pk=self.pk, active=True).exists()
+            if not was_active:
+                self.published_at = timezone.now()
+                if kwargs.get('update_fields') is not None:
+                    kwargs['update_fields'] = set(kwargs['update_fields']) | {'published_at'}
         if not self._state.adding:
             self.version += 1
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f'{self.title} ({self.month:%B %Y})'
+        return f'{self.title} ({self.date:%B %d, %Y})'
