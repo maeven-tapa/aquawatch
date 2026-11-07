@@ -20,7 +20,14 @@ def admin_records(user,kind):
         return {'users':[{'id':u.pk,'username':u.username,'email':u.email,'name':u.get_full_name(),
                          'is_admin':u.is_staff or u.is_superuser,'active':u.is_active,'device_count':u.device_count}
                         for u in User.objects.annotate(device_count=Count('device')).order_by('username')]}
-    return {'devices':[{'id':d.pk,'name':d.name,'serial':d.serial,'owner':d.user.username,
+    return {'devices':[{'id':d.pk,'name':d.name,'device_name':d.name,'device_type':d.device_type,
+                       'mobile_id':d.mobile_id or f'web-{d.pk}',
+                       'account':{'id':d.user_id,'name':d.user.get_full_name() or d.user.username,
+                                  'username':d.user.username,'email':d.user.email},
+                       'owner_name':d.owner,'driver':d.driver,'vessel':d.vessel,
+                       'registration':d.registration,'contact':d.contact,'imei':d.imei,
+                       'photo_url':d.photo.url if d.photo else '',
+                       'serial':d.serial,'owner':d.user.username,
                        'email':d.user.email,'status':d.status,'last_location':d.last_location,
                        'last_updated':d.last_updated,'sim':d.sim}
                        for d in Device.objects.select_related('user').order_by('user__username','name')]}

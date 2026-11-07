@@ -56,6 +56,8 @@ Response: `{"accepted":["a-persisted-unique-event-id"],"snapshot":{...}}`. The s
 | `device.upsert` | `id`, `name`, `type`, `serial`, `imei`, `sim`, `owner`, `driver`, `vessel`, `reg`, `contact` |
 | `report.create` | `id`, `type`, `location`, `severity`, `description`, `created_at` |
 | `reading.create` | `device_id`, `received_at`, `latitude`, `longitude`, `gyro_x`, `gyro_y`, `gsm_signal`, `acceleration`, `water_level_value`, `is_distress`, `alert_type` |
+| `alert.create` | `device_id`, `received_at`, `latitude`, `longitude`, `alert_type`, `is_distress` |
+| `alert.dismiss` | `alert_id` |
 | `profile.update` | `first_name`, `last_name`, `phone`, `role`, `station` |
 | `area.update` | `latitude`, `longitude`, `label` |
 
@@ -89,3 +91,32 @@ From the Android repository:
 ```powershell
 .\gradlew.bat :app:testDebugUnitTest :app:assembleDebug :app:lintDebug
 ```
+
+
+## Alert synchronization and dismissal
+
+Migration 0008 adds device attribution to Alert and an account-scoped
+AlertDismissal table. New SMS warnings upload through reading.create. Retained
+older real phone alerts are queued once through alert.create; labeled samples
+are excluded. Both paths share a device/timestamp identity to prevent duplicates.
+alert.dismiss events store durable dismissal keys, even when an alert upload
+arrives later. Snapshots return active alerts plus dismissed_alert_ids. Android
+merges these with pending offline dismissals. Dismissal preserves alerts and
+sensor history, and does not allow access to another user's alerts.
+
+Mobile Alerts syncs on opening or Refresh alerts, alongside background scheduling.
+The web Alerts page refreshes every 20 seconds while visible and offers Refresh.
+Web dismiss buttons use CSRF-protected POSTs. Web administrators can dismiss for
+the owning account; regular users can dismiss only their own alerts. Deploy the
+backend and migration before installing the updated APK on a production account.
+
+
+## Device identity
+
+The admin devices API now supplies separate device registration fields,
+`owner_name` (registered boat owner), and `account` (id, name, username, email).
+The older `owner` username alias remains for existing clients. Device names are
+always registration names and do not come from SOS/alert types. Android and web
+show account, device identification, vessel, contact and tracking information
+before history. Empty alert-history panels are omitted on Android; actual
+warnings remain in the selected date's recorded device alerts.

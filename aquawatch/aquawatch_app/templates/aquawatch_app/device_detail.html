@@ -1,14 +1,17 @@
 {% extends 'aquawatch_app/base.html' %}
 {% load static %}
 {% block content %}
-<div class="page-header-row"><div><h1>{{ device.name }}</h1><p class="muted">Tracking {{ device.serial }}</p></div><a class="button button-secondary" href="{% url 'devices' %}">Back to devices</a></div>
+<div class="page-header-row"><div><h1>{{ device.name }}</h1><p class="muted">Device details &middot; {{ device.serial }}</p></div><a class="button button-secondary" href="{% url 'devices' %}">Back to devices</a></div>
+<section class="page-card" aria-labelledby="device-account-title"><h2 id="device-account-title">Owning account</h2>
+<dl class="detail-list"><dt>Account name</dt><dd>{{ device.user.get_full_name|default:device.user.username }}</dd><dt>Username</dt><dd>{{ device.user.username }}</dd><dt>Email</dt><dd>{{ device.user.email|default:'Not provided' }}</dd></dl></section>
 <div class="split-layout">
   <section class="page-card">
+    <h2>Device information</h2>
     {% if device.photo %}<img class="device-photo" src="{{ device.photo.url }}" alt="{{ device.name }}">{% endif %}
     <dl class="detail-list">
-      <dt>Status</dt><dd>{{ device.status }}</dd><dt>Type</dt><dd>{{ device.device_type }}</dd>
+      <dt>Device name</dt><dd>{{ device.name }}</dd><dt>Serial number</dt><dd>{{ device.serial }}</dd><dt>Status</dt><dd>{{ device.status }}</dd><dt>Type</dt><dd>{{ device.device_type }}</dd>
       <dt>Modules</dt><dd><span class="capability-list detail-capabilities">{% for capability in device.capability_labels %}<span class="capability-chip">{{ capability }}</span>{% empty %}<span class="muted">No modules selected</span>{% endfor %}</span></dd>
-      <dt>Owner</dt><dd>{{ device.owner|default:'--' }}</dd><dt>Driver / operator</dt><dd>{{ device.driver|default:'--' }}</dd><dt>Vessel</dt><dd>{{ device.vessel|default:'--' }}</dd><dt>Registration</dt><dd>{{ device.registration|default:'--' }}</dd><dt>IMEI</dt><dd>{{ device.imei|default:'--' }}</dd><dt>SIM</dt><dd>{{ device.sim|default:'--' }}</dd><dt>Emergency contact</dt><dd>{{ device.contact|default:'--' }}</dd>
+      <dt>Registered owner</dt><dd>{{ device.owner|default:'--' }}</dd><dt>Driver / operator</dt><dd>{{ device.driver|default:'--' }}</dd><dt>Vessel</dt><dd>{{ device.vessel|default:'--' }}</dd><dt>Registration</dt><dd>{{ device.registration|default:'--' }}</dd><dt>IMEI</dt><dd>{{ device.imei|default:'--' }}</dd><dt>SIM</dt><dd>{{ device.sim|default:'--' }}</dd><dt>Emergency contact</dt><dd>{{ device.contact|default:'--' }}</dd>
     </dl>
   </section>
   <section class="page-card"><h2>Last known position</h2><div class="tracking-placeholder"><span class="tracking-dot"></span><strong>{{ device.last_location|default:'Awaiting first GPS update' }}</strong><p>{{ device.last_updated|default:'Just registered' }}</p></div><a class="button" href="{% url 'map' %}">Open monitoring map</a></section>
