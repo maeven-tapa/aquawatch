@@ -10,6 +10,7 @@ from .api import api, ApiError
 from .zone_services import zones_result
 from .models import Device, FishingZone
 from .fishing import device_status_history
+from .live_updates import live_page
 
 def require_admin(user):
     if not (user.is_staff or user.is_superuser): raise ApiError('Administrator access is required.',403)
@@ -74,6 +75,7 @@ def browser_zones(request,zone_id=None):
     return response
 
 @login_required
+@live_page
 def users_page(request):
     if not (request.user.is_staff or request.user.is_superuser): raise PermissionDenied()
     return render(request,'aquawatch_app/admin_users.html',admin_records(request.user,'users'))

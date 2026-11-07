@@ -9,6 +9,7 @@ def aquawatch_preferences(request):
     except (AttributeError, UserProfile.DoesNotExist):
         profile = None
     return {
+        'aqua_live_revision': getattr(request,'aqua_live_revision',None),
         'aqua_profile': profile,
         'aqua_language': profile.language if profile else 'English',
         'aqua_dark_mode': profile.dark_mode if profile else True,

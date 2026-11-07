@@ -3,8 +3,10 @@ from django.urls import path
 from . import views
 from . import api
 from . import admin_views
+from . import live_updates
 
 urlpatterns = [
+    path('sync-status/', live_updates.sync_status, name='sync_status'),
     path('api/v1/fishing-zones/', admin_views.mobile_zones),
     path('api/v1/fishing-zones/<uuid:zone_id>/', admin_views.mobile_zones),
     path('api/v1/admin/users/', admin_views.mobile_users),

@@ -29,8 +29,27 @@ export function reference(source) {
   return link;
 }
 export function addBaseMap(L,map) {
-  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
-    maxZoom:19,keepBuffer:1,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-  }).addTo(map);
-  L.control.zoom({position:'bottomleft'}).addTo(map);
+  const notice=L.control({position:'bottomleft'});
+  let status,failed=false;
+  notice.onAdd=()=>{
+    status=L.DomUtil.create('div','map-tile-status');
+    status.hidden=true;status.setAttribute('role','status');
+    status.textContent='Basemap unavailable. Zone outlines and GPS points are still shown. Try refreshing later.';
+    L.DomEvent.disableClickPropagation(status);
+    return status;
+  };
+  notice.addTo(map);
+  const layer=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    maxZoom:19,keepBuffer:1,updateWhenIdle:true,
+    // Identify the actual requesting site; never spoof Referer or proxy tiles.
+    referrerPolicy:'strict-origin-when-cross-origin',
+    errorTileUrl:'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"></svg>'),
+    attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  });
+  layer.on('loading',()=>{failed=false;status.hidden=true;});
+  layer.on('tileerror',()=>{failed=true;status.hidden=false;});
+  layer.on('load',()=>{status.hidden=!failed;});
+  layer.addTo(map);
+  if(!map.zoomControl)L.control.zoom({position:'bottomleft'}).addTo(map);
+  return layer;
 }

@@ -47,5 +47,5 @@ list.addEventListener('submit',async e=>{
 });
 document.getElementById('refresh-alerts').addEventListener('click',refresh);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh();});
-setInterval(()=>{if(!document.hidden)refresh();},20000);
+setInterval(()=>{if(!document.hidden)refresh();},5000);
 refresh();

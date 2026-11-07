@@ -30,6 +30,7 @@ from .accounts import EMAIL_ALREADY_REGISTERED, email_is_registered
 from .fishing import device_status_history, fishing_catalog
 from .alert_services import active_alerts, dismiss_alert, serialize_alert
 from django.http import JsonResponse
+from .live_updates import live_page
 from django.views.decorators.http import require_POST
 
 
@@ -207,6 +208,7 @@ def register(request):
 
 
 @login_required
+@live_page
 def dashboard(request):
     user = request.user
     profile = get_or_create_profile(user)
@@ -280,6 +282,7 @@ def location(request):
 
 
 @login_required
+@live_page
 def devices(request):
     user = request.user
     items = (Device.objects.all() if user.is_staff or user.is_superuser else Device.objects.filter(user=user)).select_related('user').order_by('-id')

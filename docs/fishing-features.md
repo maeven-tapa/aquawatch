@@ -45,3 +45,26 @@ No new model migration is introduced. Existing migrations 0004 and 0005 are
 still required for DeviceReading and the mobile API. Use the existing Render
 deployment process; this workspace update does not publish the site or change
 production records.
+
+
+## OpenStreetMap tile identification
+
+The web application explicitly uses `strict-origin-when-cross-origin` as its
+Django Referrer-Policy and on Leaflet tile images. Django's default `same-origin`
+header had suppressed Referer on requests to tile.openstreetmap.org, which can
+trigger OSM's blocked-tile response. Cross-origin requests now send the website
+origin, without device-detail paths or query parameters. Keep that header intact
+at the hosting proxy/CDN and retain the visible OpenStreetMap attribution.
+
+The shared basemap helper covers fishing maps, the shape editor and device
+history. Tile failures show a readable message and transparent failed tiles,
+while zone outlines and GPS overlays remain usable. There are no proxy workarounds,
+cache-busting URLs, alternate volunteer tile host rotations, prefetches or bulk
+downloads. The helper uses normal browser caching and updates on idle while
+panning. Apply changes with the usual deployment plus collectstatic, then reload
+the page. A provider-side IP block may still require contacting the provider.
+
+`tools/verify_map_tiles_preview.mjs` checks the actual browser-generated Referer,
+per-image policy, 403 handling and working overlays with intercepted tile
+requests. It deliberately does not download public tiles during automated tests.
+Reference: https://operations.osmfoundation.org/policies/tiles/

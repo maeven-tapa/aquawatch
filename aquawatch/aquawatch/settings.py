@@ -172,3 +172,8 @@ EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER or 'noreply@aquawatch.tech')
 EMAIL_TIMEOUT = 20
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# OSM requires the website's Referer. Django's default same-origin policy
+# suppresses it on cross-origin tile requests. Send only the origin to OSM,
+# keeping private paths and query parameters out of third-party requests.
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'

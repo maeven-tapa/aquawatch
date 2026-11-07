@@ -895,3 +895,8 @@ body.theme-light .map-unavailable { color:#e6f0ff; }
 #zone-form input[type=checkbox] { width:20px; height:20px; }
 body.theme-light #zone-form input:not([type=checkbox]), body.theme-light #zone-form textarea { background:#fff; color:#10253b; border-color:#bfd0dd; }
 .zone-vertex-marker span { display:flex; justify-content:center; align-items:center; width:28px; height:28px; border:2px solid white; border-radius:50%; background:#e96831; color:white; font-weight:700; box-shadow:0 1px 4px #123; }
+
+.map-tile-status { max-width:260px; padding:10px 12px; border-radius:10px; background:#fff5e9; color:#643508; border:1px solid #ddb788; font:13px/1.45 system-ui,sans-serif; box-shadow:0 2px 8px #0002; }
+.map-tile-status[hidden] { display:none; }
+@media(max-width:600px) { .map-tile-status { max-width:180px; font-size:12px; } }
+@media(max-width:800px) { #map .map-tile-status { margin-bottom:96px; max-width:240px; } }

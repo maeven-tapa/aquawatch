@@ -17,7 +17,7 @@ Install the new Android debug APK. Sign in with your existing web email/password
 
 Create a web account at `/register/`, then log into Android using that email and password. Attempt a second signup on both platforms with the same email, including uppercase letters or surrounding spaces; both must reject it and direct you to sign in. Mobile-created accounts can use their email and password on the web login page. Web-created accounts use their chosen username on the web login page. These rules take effect on Render after deploying the updated backend and running migration `0005`; this change does not require a new Android APK.
 
-In Settings, open **Incident reports**, submit a report, then use **Sync now**. Confirm the report appears on the website for that account. Register a device, receive a status or SOS SMS, and confirm the website shows its location and alert after the phone has internet. Create or edit a device on the website, then sync the phone and confirm the changes appear there. Switch accounts and verify device/report lists are isolated.
+In Settings, open **Incident reports** and submit a report. Confirm it reaches the website automatically for that account; **Sync now** remains available for a manual check. Register a device, receive a status or SOS SMS, and confirm the website shows its location and alert after the phone has internet. Create or edit a device on the website, then confirm the foreground phone receives the change during its next refresh. Switch accounts and verify device/report lists are isolated. Repeat an edit while offline, reconnect, and check that the retained event uploads without creating duplicates.
 
 For an alternate HTTPS hostname, add `aquawatch.api.url=https://your-host/` to Android's untracked `local.properties`, then rebuild. Keep the URL at the host root; the client appends `/api/v1/`. Changing the server requires signing in again. The known AquaWatch custom domains and Render hostname share the original phone cache; other servers use separate local storage.
 
@@ -67,7 +67,8 @@ The sync endpoint accepts up to 100 events and 512 KB per request. Android limit
 
 ## Current behavior and limits
 
-- Incoming SMS stays the hardware transport. The receiving phone needs internet to forward readings to Render. New SMS updates enqueue a sync immediately; Android's background scheduler decides when it can run. Periodic server refresh has a 15-minute minimum and is not a real-time push subscription.
+- Incoming SMS stays the hardware transport. The receiving phone needs internet to forward readings to Render. Each shared-data save persists an event and signals a prompt upload attempt, alongside network-constrained WorkManager recovery. Bursts coalesce without cancelling an upload already in flight. A validated reconnection schedules upload and refresh. Android's background restrictions and network/server availability can delay delivery.
+- Android refreshes shared data every 30 seconds while its main screens are visible and on startup/reconnection. Periodic background refresh retains its 15-minute minimum; this is not a push subscription. The visible web Alerts page polls every 5 seconds. Dashboard, Devices and Users check an account-scoped revision every 10 seconds and refresh only after a change. Forms/map editors are excluded so unsaved edits are preserved.
 - Reports and queued events are persisted together and partitioned by server plus Django user ID. Existing phone devices are imported only when the local account email matches the authenticated server email. Existing older SMS history remains local; new SMS readings are uploaded.
 - Pending phone edits take precedence during a refresh. Conflicting metadata writes use server processing order. Replays do not duplicate reports or alerts.
 - Profile/monitoring images stay on the phone; binary photo uploads are not implemented. Notification/display settings remain platform-specific. Password recovery is not implemented by this API.
@@ -104,8 +105,8 @@ arrives later. Snapshots return active alerts plus dismissed_alert_ids. Android
 merges these with pending offline dismissals. Dismissal preserves alerts and
 sensor history, and does not allow access to another user's alerts.
 
-Mobile Alerts syncs on opening or Refresh alerts, alongside background scheduling.
-The web Alerts page refreshes every 20 seconds while visible and offers Refresh.
+Mobile Alerts syncs on opening or Refresh alerts, alongside automatic uploads and foreground/background refresh.
+The web Alerts page refreshes every 5 seconds while visible and offers Refresh.
 Web dismiss buttons use CSRF-protected POSTs. Web administrators can dismiss for
 the owning account; regular users can dismiss only their own alerts. Deploy the
 backend and migration before installing the updated APK on a production account.

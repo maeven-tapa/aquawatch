@@ -39,6 +39,10 @@
     <footer class="site-footer">
         <p>AquaWatch coastal safety monitoring</p>
     </footer>
+    {% if aqua_live_revision %}
+    {{ aqua_live_revision|json_script:'live-revision' }}
+    <script type="module" src="{% static 'aquawatch_app/live-updates.js' %}"></script>
+    {% endif %}
     {% block scripts %}{% endblock %}
 </body>
 </html>
